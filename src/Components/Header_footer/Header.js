@@ -2,12 +2,19 @@ import React, { Component } from 'react';
 
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
-import Button from '@material-ui/core/Button';
+
 import IconButton from '@material-ui/core/IconButton';
+
+import PermIdentity from '@material-ui/icons/PermIdentity';
+
+import SideDrawer from './SideDrawer';
+import MyLogo from './MyLogo';
+
+
 import MenuIcon from '@material-ui/icons/Menu';
 import ListIcon from '@material-ui/icons/List';
-import SideDrawer from './SideDrawer'
+import Typography from '@material-ui/core/Typography';
+import Button from '@material-ui/core/Button';
 
 class Header extends Component {
 
@@ -15,7 +22,31 @@ class Header extends Component {
         drawerOpen: false,
         headerShow: false,
     }
-
+    componentDidMount(){
+        window.addEventListener('scroll', this.handleScroll);
+    }
+    
+    componentWillUnmount(){
+        window.removeEventListener('scroll', this.handleScroll);
+    }
+        handleScroll = () => {
+            if(window.scrollY > 0 ){
+                this.setState({
+                    headerShow: true
+                })
+            } else {
+                this.setState({
+                    headerShow: false
+                })
+            }
+        }
+    
+    
+    toggleDrawer = (value) => {
+        this.setState({
+            drawerOpen: value
+        })
+    }
     render() {
         return (
             <AppBar
@@ -28,8 +59,11 @@ class Header extends Component {
             >
                 <Toolbar>
                     <div className="header_logo">
-                        <div className="font_righteous logo_venue">The venue</div>
-                        <div className="header_logo_title">Musical Events</div>
+                    
+                        <MyLogo
+                            link={true}
+                            linkTo="/"
+                        />
                     </div>
 
                     <IconButton
@@ -37,7 +71,7 @@ class Header extends Component {
                         color="inherit"
                         onClick={() => this.toggleDrawer(true)}
                     >
-                        <ListIcon />
+                        <PermIdentity />
 
                     </IconButton>
                     <SideDrawer

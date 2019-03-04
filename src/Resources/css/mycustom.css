@@ -1,5 +1,7 @@
 /**  Basic Page CSS **/
 body{
+  padding:0;
+  margin:0;
   font-family: 'Lato', sans-serif;
     font-size: 1.5em;
     position: relative;
@@ -19,22 +21,47 @@ body{
         HEADER
 ======================*/
 
+/* LOGO */
+
+.header_logo {
+  flex-grow: 1;
+  padding:0px 0px 0px 0px;
+
+}
+
+.logo_image {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  flex-grow: 1;
+
+}
+/* NOT USED */
 header {
   padding:10px 0px;
   transition: all 300ms ease-in;
 }
 
-header .header_logo {
-  flex-grow: 1;
-}
-header .header_logo_venue {
-  font-size: 40px;
-}
+
 
 header .header_logo_title {
   text-transform: uppercase;
 }
 
+.logo_font {
+  font-family: 'MedievalSharp';
+  font-size: 40px;
+  flex-grow: 1;
+  text-transform: uppercase;
+
+}
+
+.sublogo_font {
+  font-family: 'MedievalSharp';
+  font-size: 20px;
+  flex-grow: 1;
+  
+}
 /*====================
         SLIDER
 ======================*/
@@ -51,7 +78,7 @@ header .header_logo_title {
   box-shadow: 0 0 300px rgba(0,0,0, 2) #ff0000 inset;
 }
  */
-
+ 
 .carousel_wrapper {
   height:700px;
   overflow: hidden;
@@ -59,5 +86,6 @@ header .header_logo_title {
 }
 
 .carousel_image {
+  
   background-size: cover !important;
 }

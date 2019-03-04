@@ -8,7 +8,7 @@ import slide_three from '../../../Resources/images/banner/banner03.jpg';
 const Carousel = () => {
 
     const settings = {
-        dots: false,
+        dots: true,
         infinite: true,
         autoplay: true,
         speed: 500
@@ -19,18 +19,17 @@ const Carousel = () => {
             className="carousel_wrapper"
             style={{
                 height: `${window.innerHeight}px`,
+                width: `${window.innerWidth}px`,
                 overflow: 'hidden'
             }}
         >
             <Slider {...settings}>
                 <div>
                     <div
-                        className="carousel_image vignette"
+                        className="carousel_image"
                         style={{
                             background: `url(${slide_one})`,
-                            height: `${window.innerHeight}px`,
-                            width: `${window.innerWidth}px`
-                        }}
+                            height: `${window.innerHeight}px`                        }}
                     >
                     </div>
                 </div>
