@@ -15,16 +15,14 @@ const config = {
   firebase.initializeApp(config);
 
 const firebaseDB = firebase.database();
-const firebaseMatches = firebaseDB.ref('matches');
-const firebasePromotions = firebaseDB.ref('promotions');
-const firebaseTeams = firebaseDB.ref('teams')
-const firebasePlayers = firebaseDB.ref('players')
+const firebaseHNavs = firebaseDB.ref('hnavs');
+const firebaseSlider = firebaseDB.ref('slider');
+const firebaseTeams = firebaseDB.ref('teams');
 
 export {
     firebase,
-    firebaseMatches,
-    firebasePromotions,
+    firebaseHNavs,
+    firebaseSlider,
     firebaseTeams,
-    firebasePlayers,
     firebaseDB
 }

@@ -3,18 +3,16 @@ import React, { Component } from 'react';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 
-import IconButton from '@material-ui/core/IconButton';
 
 import PermIdentity from '@material-ui/icons/PermIdentity';
 
-import SideDrawer from './SideDrawer';
-import MyLogo from './MyLogo';
-
+import { Link } from 'react-router-dom';
 
 import MenuIcon from '@material-ui/icons/Menu';
 import ListIcon from '@material-ui/icons/List';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
+import IconButton from '@material-ui/core/IconButton';
 
 class Header extends Component {
 
@@ -22,31 +20,7 @@ class Header extends Component {
         drawerOpen: false,
         headerShow: false,
     }
-    componentDidMount(){
-        window.addEventListener('scroll', this.handleScroll);
-    }
-    
-    componentWillUnmount(){
-        window.removeEventListener('scroll', this.handleScroll);
-    }
-        handleScroll = () => {
-            if(window.scrollY > 0 ){
-                this.setState({
-                    headerShow: true
-                })
-            } else {
-                this.setState({
-                    headerShow: false
-                })
-            }
-        }
-    
-    
-    toggleDrawer = (value) => {
-        this.setState({
-            drawerOpen: value
-        })
-    }
+
     render() {
         return (
             <AppBar
@@ -58,26 +32,19 @@ class Header extends Component {
                 }}
             >
                 <Toolbar>
-                    <div className="header_logo">
                     
-                        <MyLogo
-                            link={true}
-                            linkTo="/"
-                        />
-                    </div>
+                        <div className="header_logo">
 
-                    <IconButton
-                        aria-label="Menu"
-                        color="inherit"
-                        onClick={() => this.toggleDrawer(true)}
-                    >
-                        <PermIdentity />
+                        <Link to="/" className="link_main">
+                            <div className="logo_font">Tryzna</div>
+                            <div className="sublogo_font">Medieval Group</div>
+                        </Link>
+                        </div>
 
-                    </IconButton>
-                    <SideDrawer
-                        open={this.state.drawerOpen}
-                        onClose={(value) => this.toggleDrawer(value)}
-                    />
+
+                    <Link to="/signin" className="link_main"><PermIdentity /></Link>
+
+
                 </Toolbar>
             </AppBar>
         );
