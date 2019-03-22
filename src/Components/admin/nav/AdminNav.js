@@ -12,7 +12,7 @@ const links = [
     },
     {
         title: 'Add Navigation',
-        linkTo: '/admin_hostnav/add_hostnav'
+        linkTo: '/admin_hostnav/add_hnav'
     }
 ]
 
@@ -20,7 +20,8 @@ const links = [
 const style = {
     color: '#ffffff',
     fontWeight: '300',
-    borderBottom:'1px solid #353535'
+    borderBottom:'1px solid #353535',
+
 }
 
 

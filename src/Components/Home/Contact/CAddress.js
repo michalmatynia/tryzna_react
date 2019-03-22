@@ -10,7 +10,7 @@ const ConDetails = () => {
             <p><strong>Address:</strong> 71 Fioletowa, Szczecin, Poland</p>
                 <p><strong>Phone:</strong> +48 798 985 231</p>
                 <p><strong>Email:</strong> <a href="mailto:info@tryzna.pl">info@tryzna.pl</a></p>
-                <p>Opening <strong>Hours</strong></p> <p><i className="fa fa-clock-o"></i> Monday - Friday 9am - 5pm</p> <p><i class="fa fa-clock-o"></i> Saturday - Closed</p> <p><i class="fa fa-clock-o"></i> Sunday - Closed</p>
+                <p>Opening <strong>Hours</strong></p> <p>Monday - Friday 9am - 5pm</p> <p> Saturday - Closed</p> <p> Sunday - Closed</p>
 
         </div>
     );

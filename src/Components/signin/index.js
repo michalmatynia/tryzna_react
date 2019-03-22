@@ -46,14 +46,13 @@ class SignIn extends Component {
         const newFormdata = { ...this.state.formdata }
         const newElement = { ...newFormdata[element.id] }
 
-        // Wazna linijka 
-        newFormdata[element.id] = newElement;
-
         newElement.value = element.event.target.value;
 
-        let validData = validate(newElement);
+        let validData = validate(newElement)
         newElement.valid = validData[0];
         newElement.validationMessage = validData[1]
+
+        newFormdata[element.id] = newElement;
 
         this.setState({
             formError: false,
@@ -66,6 +65,7 @@ class SignIn extends Component {
 
         let dataToSubmit = {};
         let formIsValid = true;
+
 
         for (let key in this.state.formdata) {
             dataToSubmit[key] = this.state.formdata[key].value;
@@ -89,6 +89,7 @@ class SignIn extends Component {
                 formError: true
             })
         }
+
     }
 
     render() {

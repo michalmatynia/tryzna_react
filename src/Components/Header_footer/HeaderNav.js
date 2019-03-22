@@ -50,8 +50,8 @@ class AdminHNavs extends Component {
                                  this.state.menuitems ? 
                                  this.state.menuitems.map((menuitem, i)=>(
                                      <TableRow key={i}>
-                                     <TableCell><Link to={`/admin_hostnav/edit_hnav/${menuitem.id}`}>
-                                     {menuitem.title}</Link></TableCell>
+                                     <TableCell><Link to={`/admin_hnavs/edit_hnav/${menuitem.id}`}>
+                                     </Link>{menuitem.title}</TableCell>
                                      </TableRow>
 
                                  ))

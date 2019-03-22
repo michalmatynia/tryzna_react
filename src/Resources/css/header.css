@@ -1,0 +1,53 @@
+/*====================
+        HEADER
+======================*/
+
+/* LOGO */
+
+
+.logo_font {
+    font-family: 'MedievalSharp';
+    font-size: 40px;
+    flex-grow: 1;
+    text-transform: uppercase;
+  
+  }
+  
+  .sublogo_font {
+    font-family: 'MedievalSharp';
+    font-size: 20px;
+    flex-grow: 1;
+    
+  }
+  
+  
+  header {
+    padding:10px 0px;
+    transition: all 300ms ease-in;
+  }
+  
+  header .header_logo {
+    flex-grow: 1;
+    padding:0px 0px 0px 0px;
+  }
+  header .header_logo_venue {
+    font-size: 40px;
+  }
+  
+  header .header_logo_title {
+    text-transform: uppercase;
+  }
+  
+  
+  .logo_image {
+    position: relative;
+    padding:10px 10px 10px 10px;
+    margin:10px 10px 10px 10px;
+  
+    width: 100%;
+    height: 100%;
+    flex-grow: 1;
+  
+  }
+  
+  

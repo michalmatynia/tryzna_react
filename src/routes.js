@@ -23,12 +23,13 @@ import AddEditSlider from './Components/admin/slider/addEditSlider'
 import NotFound from './Components/ui/not_found'
 
 const Routes = (props) => {
+
     return(
 <Layout>
   <Switch>
   <PrivateRoute {...props} path="/admin_hostnav" exact component={AdminHNavs}/>
-  <PrivateRoute {...props} path="/admin_hostnav/add_hostnav" exact component={AddEditHNav}/>
-  <PrivateRoute {...props} path="/admin_hostnav/edit_hostnav/:id" exact component={AddEditHNav}/>
+  <PrivateRoute {...props} path="/admin_hostnav/add_hnav" exact component={AddEditHNav}/>
+  <PrivateRoute {...props} path="/admin_hostnav/edit_hnav/:id" exact component={AddEditHNav}/>
 
   <PrivateRoute {...props} path="/admin_slider" exact component={AdminSlider}/>
   <PrivateRoute {...props} path="/admin_slider/edit_slider/:id" exact component={AddEditSlider}/>
@@ -36,13 +37,13 @@ const Routes = (props) => {
 
  
   <PrivateRoute {...props} path="/dashboard" exact component={Dashboard}/>
-  <PublicRoute {...props} restricted={true} path="/signin" exact component={SignIn} />
+  <PublicRoute {...props} restricted={true} path="/sign_in" exact component={SignIn} />
 
   <PublicRoute {...props} restricted={false} path="/" exact component={Home} />
   <PublicRoute {...props} restricted={false} exact component={NotFound} />
 
   </Switch>
-</Layout>
+</Layout> 
     )
   }
   

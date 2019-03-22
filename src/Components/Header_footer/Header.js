@@ -14,6 +14,8 @@ import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 
+
+
 class Header extends Component {
 
     state = {
@@ -21,12 +23,58 @@ class Header extends Component {
         headerShow: false,
     }
 
+    componentDidMount(){
+
+        window.addEventListener('click', this.handleClick);
+        window.addEventListener('scroll', this.handleScroll);
+    }
+    
+    componentWillUnmount(){
+        window.removeEventListener('scroll', this.handleScroll);
+        window.removeEventListener('scroll', this.handleClick);
+    }
+
+    handleClick = () => {
+        if(window.location.pathname == '/dashboard'
+            || window.location.pathname == '/sign_in'
+            || window.location.pathname.includes('admin')) {
+            this.setState({
+                headerShow: true
+            })
+        } else {
+            this.setState({
+                headerShow: false
+            })
+        }
+    }
+        handleScroll = () => {
+            if(window.scrollY > 0
+                || window.location.pathname == '/sign_in'
+                || window.location.pathname == '/dashboard'
+                || window.location.pathname.includes('admin')) {
+                this.setState({
+                    headerShow: true
+                })
+            } else {
+                this.setState({
+                    headerShow: false
+                })
+            }
+        }
+    
+    
+    toggleDrawer = (value) => {
+        this.setState({
+            drawerOpen: value
+        })
+    }
+
     render() {
         return (
             <AppBar
                 position="fixed"
                 style={{
-                    backgroundColor: this.state.headerShow ? 'blue' : 'transparent',
+                    backgroundColor: this.state.headerShow ? '#3c3c3c' : 'transparent',
                     boxShadow: 'none',
                     padding: '10px 0px'
                 }}
@@ -42,7 +90,7 @@ class Header extends Component {
                         </div>
 
 
-                    <Link to="/signin" className="link_main"><PermIdentity /></Link>
+                    <Link to="/sign_in" className="link_main"><PermIdentity /></Link>
 
 
                 </Toolbar>

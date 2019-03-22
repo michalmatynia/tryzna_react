@@ -4,8 +4,7 @@ import AdminLayout from '../../../Hoc/AdminLayout';
 import FormField from '../../ui/formFields';
 import { validate } from '../../ui/misc';
 
-import { firebaseTeams, firebaseDB, firebaseHNavs } from '../../../firebase'
-import { firebaseLooper } from '../../ui/misc';
+import { firebaseDB, firebaseHNavs, firebase } from '../../../firebase'
 
 class AddEditHNav extends Component {
 
@@ -16,237 +15,81 @@ class AddEditHNav extends Component {
         formSuccess: '',
         teams: [],
         formdata: {
-            date: {
+            title: {
                 element: 'input',
                 value: '',
                 config: {
-                    label: 'Event date',
-                    name: 'date_input',
-                    type: 'date',
+                    label: 'Menu Item',
+                    name: 'menuitem_input',
+                    type: 'text',
                 },
                 validation: {
-                    required: true,
+                    required: false,
                 },
                 valid: false,
                 validationMessage: '',
                 showlabel: true
-            },
-            local: {
-                element: 'select',
-                value: '',
-                config: {
-                    label: 'Select a local team',
-                    name: 'select_local',
-                    type: 'select',
-                    options: []
-                },
-                validation: {
-                    required: true
-                },
-                valid: false,
-                validationMessage: '',
-                showlabel: false
-            },
-            resultLocal: {
-                element: 'input',
-                value: '',
-                config: {
-                    label: 'Result Local',
-                    name: 'result_local_input',
-                    type: 'text',
-                },
-                validation: {
-                    required: true,
-                },
-                valid: false,
-                validationMessage: '',
-                showlabel: false
-            },
-            away: {
-                element: 'select',
-                value: '',
-                config: {
-                    label: 'Select a local team',
-                    name: 'select_local',
-                    type: 'select',
-                    options: []
-                },
-                validation: {
-                    required: true
-                },
-                valid: false,
-                validationMessage: '',
-                showlabel: false
-            },
-            resultAway: {
-                element: 'input',
-                value: '',
-                config: {
-                    label: 'Result Local',
-                    name: 'result_local_input',
-                    type: 'text',
-                },
-                validation: {
-                    required: true,
-                },
-                valid: false,
-                validationMessage: '',
-                showlabel: false
-            },
-            referee: {
-                element: 'input',
-                value: '',
-                config: {
-                    label: 'Referee',
-                    name: 'referee_input',
-                    type: 'text',
-                },
-                validation: {
-                    required: true,
-                },
-                valid: false,
-                validationMessage: '',
-                showlabel: true
-            },
-            stadium: {
-                element: 'input',
-                value: '',
-                config: {
-                    label: 'Stadium',
-                    name: 'stadium_input',
-                    type: 'text',
-                },
-                validation: {
-                    required: true,
-                },
-                valid: false,
-                validationMessage: '',
-                showlabel: true
-            },
-            result: {
-                element: 'select',
-                value: '',
-                config: {
-                    label: 'Team result',
-                    name: 'select_result',
-                    type: 'select',
-                    options: [
-                        { key: 'W', value: 'W' },
-                        { key: 'L', value: 'L' },
-                        { key: 'D', value: 'D' },
-                        { key: 'n/a', value: 'n/a' }
 
-                    ]
-                },
-                validation: {
-                    required: true
-                },
-                valid: false,
-                validationMessage: '',
-                showlabel: true
-            },
-            final: {
-                element: 'select',
-                value: '',
-                config: {
-                    label: 'Game played ?',
-                    name: 'select_played',
-                    type: 'select',
-                    options: [
-                        { key: 'Yes', value: 'Yes' },
-                        { key: 'No', value: 'No' }
-                    ]
-                },
-                validation: {
-                    required: true
-                },
-                valid: false,
-                validationMessage: '',
-                showlabel: true
             }
         }
     }
 
-    updateForm(element) {
+    updateFields = (menuitem, menuitemId, formType) =>{
+        const newFormdata = { ...this.state.formdata}
 
-        const newFormdata = { ...this.state.formdata }
-        const newElement = { ...newFormdata[element.id] }
+        for(let key in newFormdata){
+            newFormdata[key].value = menuitem[key];
+            newFormdata[key].valid = true
+        }
 
-        // Wazna linijka 
-        newFormdata[element.id] = newElement;
+        this.setState({
+            menuitemId,
+            formType,
+            formdata: newFormdata
+        })
+    }
 
-        newElement.value = element.event.target.value;
 
-        let validData = validate(newElement);
+    componentDidMount(){
+        const menuitemId = this.props.match.params.id;
+
+
+        if(!menuitemId){
+            this.setState({
+                formType:'Add MenuItem'
+            })
+        } else {
+           firebaseDB.ref(`hnavs/${menuitemId}`).once('value')
+                .then( snapshot => {
+                    this.updateFields(snapshot.val(),menuitemId,'Edit Menu Item')
+                })
+           
+        }
+
+    }
+
+
+    updateForm(element, content = ''){
+        const newFormdata = {...this.state.formdata}
+        const newElement = { ...newFormdata[element.id]}
+
+        if(content === ''){
+            newElement.value = element.event.target.value;
+        } else {
+            newElement.value = content
+        }
+        
+        let validData = validate(newElement)
         newElement.valid = validData[0];
         newElement.validationMessage = validData[1]
+
+        newFormdata[element.id] = newElement;
 
         this.setState({
             formError: false,
             formdata: newFormdata
         })
     }
-
-    updateFields(match, teamOptions, teams, type, matchId) {
-
-        const newFormdata = {
-            ...this.state.formdata
-        }
-
-        for (let key in newFormdata) {
-            if (match) {
-                newFormdata[key].value = match[key];
-                newFormdata[key].valid = true;
-            }
-            if (key === 'local' || key === 'away') {
-                newFormdata[key].config.options = teamOptions
-            }
-        }
-
-        this.setState({
-            matchId,
-            formType: type,
-            formdata: newFormdata,
-            teams
-        })
-    }
-
-    componentDidMount() {
-        const matchId = this.props.match.params.id;
-        const getTeams = (match, type) => {
-            firebaseTeams.once('value').then(snapshot => {
-                const teams = firebaseLooper(snapshot);
-                const teamOptions = [];
-
-                snapshot.forEach((childSnapshot) => {
-                    teamOptions.push({
-                        key: childSnapshot.val().shortName,
-                        value: childSnapshot.val().shortName
-                    })
-                });
-
-                this.updateFields(match, teamOptions, teams, type, matchId)
-
-
-            })
-        }
-
-
-        if (!matchId) {
-            // Add Match
-            getTeams(false, 'Add Match')
-        } else {
-            // Edit Match
-
-            firebaseDB.ref(`matches/${matchId}`).once('value')
-                .then((snapshot) => {
-                    const match = snapshot.val();
-                    getTeams(match, 'Edit Match')
-
-                })
-        }
-    }
-
     successForm(message) {
         this.setState({
             formSuccess: message
@@ -266,23 +109,15 @@ class AddEditHNav extends Component {
         let formIsValid = true;
 
         for (let key in this.state.formdata) {
+
+
             dataToSubmit[key] = this.state.formdata[key].value;
             formIsValid = this.state.formdata[key].valid && formIsValid;
         }
 
-        // Extract Thumbnail from Teams
-        this.state.teams.forEach((team) => {
-            if (team.shortName === dataToSubmit.local) {
-                dataToSubmit['localThmb'] = team.thmb;
-            }
-            if (team.shortName === dataToSubmit.away) {
-                dataToSubmit['awayThmb'] = team.thmb;
-            }
-        })
-
         if (formIsValid) {
-            if (this.state.formType === 'Edit Navigation') {
-                firebaseDB.ref(`hnavs/${this.state.matchId}`)
+            if (this.state.formType === 'Edit Menu Item') {
+                firebaseDB.ref(`hnavs/${this.state.menuitemId}`)
                     .update(dataToSubmit)
                     .then(() => {
                         this.successForm('Updated correctly');
@@ -293,6 +128,7 @@ class AddEditHNav extends Component {
                     })
             } else {
                 ///Add Match
+
 
                 firebaseHNavs.push(dataToSubmit)
                     .then(() => {
@@ -318,83 +154,18 @@ class AddEditHNav extends Component {
     render() {
         return (
             <AdminLayout>
-                <div className="editmatch_dialog_wrapper">
+                <div className="edit_dialog_wrapper">
                     <h2>
                         {this.state.formType}
                     </h2>
                     <div>
                         <form onSubmit={(event) => this.submitForm(event)}>
                             <FormField
-                                id={'date'}
-                                formdata={this.state.formdata.date}
+                                id={'title'}
+                                formdata={this.state.formdata.title}
                                 change={(element) => this.updateForm(element)}
                             />
-                            <div className="select_team_layout">
-                                <div className="label_inputs">Local</div>
-                                <div className="wrapper">
-                                    <div className="left">
-                                        <FormField
-                                            id={'local'}
-                                            formdata={this.state.formdata.local}
-                                            change={(element) => this.updateForm(element)}
-                                        />
-                                    </div>
-                                    <div>
-                                        <FormField
-                                            id={'resultLocal'}
-                                            formdata={this.state.formdata.resultLocal}
-                                            change={(element) => this.updateForm(element)}
-                                        />
-                                    </div>
-                                </div>
 
-                            </div>
-
-                            <div className="select_team_layout">
-                                <div className="label_inputs">Away</div>
-                                <div className="wrapper">
-                                    <div className="left">
-                                        <FormField
-                                            id={'away'}
-                                            formdata={this.state.formdata.away}
-                                            change={(element) => this.updateForm(element)}
-                                        />
-                                    </div>
-                                    <div>
-                                        <FormField
-                                            id={'resultAway'}
-                                            formdata={this.state.formdata.resultAway}
-                                            change={(element) => this.updateForm(element)}
-                                        />
-                                    </div>
-                                </div>
-
-                            </div>
-
-                            <div className="split_fields">
-                                <FormField
-                                    id={'referee'}
-                                    formdata={this.state.formdata.referee}
-                                    change={(element) => this.updateForm(element)}
-                                />
-                                <FormField
-                                    id={'stadium'}
-                                    formdata={this.state.formdata.stadium}
-                                    change={(element) => this.updateForm(element)}
-                                />
-                            </div>
-                            <div className="split_fields">
-                                <FormField
-                                    id={'result'}
-                                    formdata={this.state.formdata.result}
-                                    change={(element) => this.updateForm(element)}
-                                />
-                                <FormField
-                                    id={'final'}
-                                    formdata={this.state.formdata.final}
-                                    change={(element) => this.updateForm(element)}
-                                />
-                            </div>
                             <div className="success_label">
                                 {this.state.formSuccess}
                             </div>

@@ -1,0 +1,41 @@
+/*=============================
+          FOOTER
+===============================*/
+
+footer {
+    padding:2% 0%;
+    text-align: center;
+    font-size: 14px;
+    color:#ffffff;
+  }
+  
+  footer a {
+    color: #E0E6AE;
+  }
+  
+  footer a:hover {
+    color: #EEC856 !important;
+  }
+  
+  .footer_wrapper {
+    display: flex;
+    line-height: 150%;
+  }
+  
+  .footer_column {
+    flex: 50%;
+    padding: 2%;
+  }
+  
+  .footer_left {
+  
+    text-align: left;
+  
+    }
+  
+    .footer_right {
+      text-align: right;
+    
+      }
+  
+  
