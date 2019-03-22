@@ -10,14 +10,15 @@ import Paper from '@material-ui/core/Paper';
 
 import CircularProgress from '@material-ui/core/CircularProgress';
 
-import { firebaseHNavs } from '../../../firebase';
+import { firebaseHNavs, firebaseDB, firebase } from '../../../firebase';
 import { firebaseLooper, reverseArray } from '../../ui/misc';
 
 class AdminHNavs extends Component {
 
     state = {
         isloading: true,
-        menuitems: []
+        menuitems: [],
+        tableMessage: ''
     }
 
     componentDidMount() {
@@ -32,6 +33,22 @@ class AdminHNavs extends Component {
             })
     }
 
+removeItem(itemToRemoveID) {
+
+
+
+firebaseDB.ref('hnavs/' + itemToRemoveID).set(null)
+.then(()=>{
+    console.log('data removed')
+
+    this.props.history.push('/admin_hostnav');
+
+})
+.catch((e)=>{
+    console.log(e)
+})
+}
+
     render() {
         return (
             <AdminLayout>
@@ -41,7 +58,7 @@ class AdminHNavs extends Component {
                             <TableHead>
                                 <TableRow>
                                     <TableCell>Name</TableCell>
-
+                                    <TableCell>Remove</TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
@@ -52,6 +69,9 @@ class AdminHNavs extends Component {
                                      <TableRow key={i}>
                                      <TableCell><Link to={`/admin_hostnav/edit_hnav/${menuitem.id}`}>
                                      {menuitem.title}</Link></TableCell>
+                                     <TableCell><button onClick={(event) => this.removeItem(menuitem.id)}>
+                                     X
+                                </button></TableCell>
                                      </TableRow>
 
                                  ))
