@@ -49,13 +49,23 @@
     min-height: 100vh;
     background: #282828;
     border-right: 2px solid #01285e;
-    font-size: 10px;
+    color: #dbdbdb;
+    font-size: 16px;
+
   }
+  .admin_container .admin_nav_item * {
+    color: #6c6c6c;
+
+      }
+
+      .admin_container .admin_nav_subitem * {
+        color: #dbdbdb;
+          }
 
   .admin_container .admin_left_nav a {
 text-decoration-line: none;
   }
-  
+
   .admin_container  .admin_right {
     flex-grow: 1;
   }

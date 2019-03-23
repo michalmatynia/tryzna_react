@@ -4,7 +4,7 @@ import AdminLayout from '../../../Hoc/AdminLayout';
 import FormField from '../../ui/formFields';
 import { validate } from '../../ui/misc';
 
-import { firebaseDB, firebaseHNavs, firebase } from '../../../firebase'
+import { firebaseDB, firebaseHNavs } from '../../../firebase'
 
 class AddEditHNav extends Component {
 

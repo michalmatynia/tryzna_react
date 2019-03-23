@@ -8,7 +8,8 @@ const Location = () => {
             width="100%"
             height="500px"
             frameBorder="0"
-            allowFullScreen>
+            allowFullScreen
+            title="location frame" >
             </iframe>
         <div className="location_tag">
         <div>Location</div>
