@@ -1,58 +1,28 @@
 {
     "data" : [
       {
-          "name": "Item1",
-          "url": "/item1"
-      },
-      {
-        "name": "Item2",
-        "url": "/item2"
-      },
-      {
         "name": "Navigation",
-        "url": "/admin_hostnav",
         "children": [
           {
-            "name": "Child31",
-            "url": "/child31"
+            "name": "List",
+            "url": "/admin_hostnav"
           },
           {
-            "name": "Child32",
-            "url": "/child32"
-          },
-          {
-            "name": "Child33",
-            "url": "/child33"
+            "name": "Add",
+            "url": "/admin_hostnav/add_hnav"
           }
         ]
       },
       {
-        "name": "Item4",
+        "name": "Slider",
         "children": [
           {
-            "name": "Child41",
-            "url": "/child41"
+            "name": "List",
+            "url": "/admin_slider"
           },
           {
-            "name": "Child42",
-            "url": "/child42"
-          },
-          {
-            "name": "Child43",
-            "children": [
-              {
-                "name": "Child431",
-                "url": "/child431"
-              },
-              {
-                "name": "Child432",
-                "url": "/child432,"
-              },
-              {
-                "name": "Child433",
-                "url": "/child433"
-              }
-            ]
+            "name": "Add",
+            "url": "/admin_slider/add_slider"
           }
         ]
       }

@@ -24,27 +24,29 @@ handleClick( item ) {
   }
 // if the menu item doesn't have any child, this method simply returns a clickable menu item that redirects to any location and if there is no child this method uses recursion to go until the last level of children and then returns the item by the first condition.
 handler( children ) {
-
-
-
     const { state } = this
+    
 return children.map( ( subOption, index ) => {
+
 
       if ( !subOption.children ) {
         return (
           <div className='admin_nav_subitem' key={ index }>
+            <Link 
+                to={ subOption.url }
+                >
             <ListItem 
               button 
               key={ index }
               >
-              <Link 
-                to={ subOption.url }
-                >
+              
                 <ListItemText 
                   primary={ subOption.name } 
                 />
-              </Link>
+                
+              
             </ListItem>
+            </Link>
           </div>
         )
       }
@@ -56,6 +58,7 @@ return children.map( ( subOption, index ) => {
             >
             <ListItemText 
               primary={ subOption.name } />
+              
             { state[ subOption.name ] ? 
               <ExpandLess /> :
               <ExpandMore />

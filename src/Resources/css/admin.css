@@ -69,6 +69,22 @@ text-decoration-line: none;
   .admin_container  .admin_right {
     flex-grow: 1;
   }
+
+  .admin_container  .admin_right td, a{
+    text-decoration: none;
+    text-underline-position: unset;
+    text-decoration-line: none;
+    border: 0px;
+    font-size: 20px;
+    color: #282828;
+  }
+
+  .admin_container  .admin_right td:hover {
+    background-color: #b6b6b6;
+    transition: 0.3s;
+    width: 100%;
+  }
+
   .admin_container  .admin_progress {
     text-align: center;
     margin: 20px 0px;
@@ -114,7 +130,9 @@ text-decoration-line: none;
     color: #ffffff;
   }
   
+
   .admin_submit button {
+    flex: 50%;
     font-size: 20px;
     margin: 40px 0px;
     background: #009688;

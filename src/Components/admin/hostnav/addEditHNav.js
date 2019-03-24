@@ -6,6 +6,10 @@ import { validate } from '../../ui/misc';
 
 import { firebaseDB, firebaseHNavs } from '../../../firebase'
 
+// Icons
+import DeleteIcon from '@material-ui/icons/Delete';
+import IconButton from '@material-ui/core/IconButton';
+
 class AddEditHNav extends Component {
 
     state = {
@@ -19,7 +23,7 @@ class AddEditHNav extends Component {
                 element: 'input',
                 value: '',
                 config: {
-                    label: 'Menu Item',
+                    label: 'Title',
                     name: 'menuitem_input',
                     type: 'text',
                 },
@@ -34,10 +38,10 @@ class AddEditHNav extends Component {
         }
     }
 
-    updateFields = (menuitem, menuitemId, formType) =>{
-        const newFormdata = { ...this.state.formdata}
+    updateFields = (menuitem, menuitemId, formType) => {
+        const newFormdata = { ...this.state.formdata }
 
-        for(let key in newFormdata){
+        for (let key in newFormdata) {
             newFormdata[key].value = menuitem[key];
             newFormdata[key].valid = true
         }
@@ -50,35 +54,35 @@ class AddEditHNav extends Component {
     }
 
 
-    componentDidMount(){
+    componentDidMount() {
         const menuitemId = this.props.match.params.id;
 
 
-        if(!menuitemId){
+        if (!menuitemId) {
             this.setState({
-                formType:'Add MenuItem'
+                formType: 'Add'
             })
         } else {
-           firebaseDB.ref(`hnavs/${menuitemId}`).once('value')
-                .then( snapshot => {
-                    this.updateFields(snapshot.val(),menuitemId,'Edit Menu Item')
+            firebaseDB.ref(`hnavs/${menuitemId}`).once('value')
+                .then(snapshot => {
+                    this.updateFields(snapshot.val(), menuitemId, 'Edit')
                 })
-           
+
         }
 
     }
 
 
-    updateForm(element, content = ''){
-        const newFormdata = {...this.state.formdata}
-        const newElement = { ...newFormdata[element.id]}
+    updateForm(element, content = '') {
+        const newFormdata = { ...this.state.formdata }
+        const newElement = { ...newFormdata[element.id] }
 
-        if(content === ''){
+        if (content === '') {
             newElement.value = element.event.target.value;
         } else {
             newElement.value = content
         }
-        
+
         let validData = validate(newElement)
         newElement.valid = validData[0];
         newElement.validationMessage = validData[1]
@@ -102,6 +106,22 @@ class AddEditHNav extends Component {
         }, 2000)
     }
 
+removeItem(itemToRemoveID) {
+
+
+
+    firebaseDB.ref('hnavs/' + itemToRemoveID).set(null)
+        .then(() => {
+            console.log('data removed')
+
+            this.props.history.push('/admin_hostnav');
+
+        })
+        .catch((e) => {
+            console.log(e)
+        })
+}
+
     submitForm(event) {
         event.preventDefault();
 
@@ -116,7 +136,7 @@ class AddEditHNav extends Component {
         }
 
         if (formIsValid) {
-            if (this.state.formType === 'Edit Menu Item') {
+            if (this.state.formType === 'Edit') {
                 firebaseDB.ref(`hnavs/${this.state.menuitemId}`)
                     .update(dataToSubmit)
                     .then(() => {
@@ -156,7 +176,12 @@ class AddEditHNav extends Component {
             <AdminLayout>
                 <div className="edit_dialog_wrapper">
                     <h2>
-                        {this.state.formType}
+                        {this.state.formType} 
+                        <IconButton 
+                    onClick={(event) => this.removeItem(this.props.match.params.id)}
+                    >
+                    <DeleteIcon />
+                    </IconButton>
                     </h2>
                     <div>
                         <form onSubmit={(event) => this.submitForm(event)}>
@@ -165,7 +190,6 @@ class AddEditHNav extends Component {
                                 formdata={this.state.formdata.title}
                                 change={(element) => this.updateForm(element)}
                             />
-
                             <div className="success_label">
                                 {this.state.formSuccess}
                             </div>
@@ -178,7 +202,6 @@ class AddEditHNav extends Component {
                                     {this.state.formType}
                                 </button>
                             </div>
-
                         </form>
                     </div>
 
