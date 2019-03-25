@@ -50,4 +50,12 @@
   
   }
   
+  header button span {
+   color: #afafaf;
+  }
   
+  header .react-reveal {
+flex:10%;
+  }
+
+

@@ -5,7 +5,7 @@ import FormField from '../../ui/formFields';
 import { validate } from '../../ui/misc';
 
 import { firebaseDB, firebaseHNavs } from '../../../firebase'
-
+import { firebaseLooper } from '../../ui/misc';
 // Icons
 import DeleteIcon from '@material-ui/icons/Delete';
 import IconButton from '@material-ui/core/IconButton';
@@ -24,7 +24,7 @@ class AddEditHNav extends Component {
                 value: '',
                 config: {
                     label: 'Title',
-                    name: 'menuitem_input',
+                    name: 'menuitem_title',
                     type: 'text',
                 },
                 validation: {
@@ -34,6 +34,49 @@ class AddEditHNav extends Component {
                 validationMessage: '',
                 showlabel: true
 
+            },
+            link: {
+                element: 'input',
+                value: '',
+                config: {
+                    label: 'Link',
+                    name: 'menuitem_link',
+                    type: 'text',
+                },
+                validation: {
+                    required: false,
+                },
+                valid: false,
+                validationMessage: '',
+                showlabel: true
+
+            },
+            position: {
+                element: 'select',
+                value: '',
+                config: {
+                    label: 'Select a position',
+                    name: 'select_position',
+                    type: 'select',
+                    options: [
+                        { key: "1", value: "1" },
+                        { key: "2", value: "2" },
+                        { key: "3", value: "3" },
+                        { key: "4", value: "4" },
+                        { key: "5", value: "5" },
+                        { key: "6", value: "6" },
+                        { key: "7", value: "7" },
+                        { key: "8", value: "8" },
+                        { key: "9", value: "9" },
+                        { key: "10", value: "10" },
+                    ]
+                },
+                validation: {
+                    required: true
+                },
+                valid: false,
+                validationMessage: '',
+                showlabel: true
             }
         }
     }
@@ -67,20 +110,71 @@ class AddEditHNav extends Component {
                 .then(snapshot => {
                     this.updateFields(snapshot.val(), menuitemId, 'Edit')
                 })
-
         }
 
     }
 
 
     updateForm(element, content = '') {
+
         const newFormdata = { ...this.state.formdata }
         const newElement = { ...newFormdata[element.id] }
+
+        const previousPosition = newFormdata[element.id].value
 
         if (content === '') {
             newElement.value = element.event.target.value;
         } else {
             newElement.value = content
+        }
+
+        if ((newElement.config.name === 'select_position') && (this.state.formType === 'Edit')) {
+
+            firebaseDB.ref('hnavs').orderByChild('position').once('value')
+                .then((snapshot) => {
+
+                    let counter = 0;
+
+                    snapshot.forEach(() => {
+                        counter = counter + 1;
+                    })
+
+                    /*              
+                    // CUrrent Title
+                    console.log(newFormdata.title.value)
+                    // Current Previous position
+                    console.log(previousPosition)
+                    // Current new position
+                    console.log(newElement.value)
+                    // Number of all menu items
+                    */
+
+                    snapshot.forEach((childSnapshot) => {
+
+                        let grandChildSnaphot = childSnapshot.val()
+                        let grandChildSnaphotKey = childSnapshot.key
+
+                        if ((newFormdata.title.value !== grandChildSnaphot.title) && (grandChildSnaphot.position === newElement.value)) {
+
+                            firebaseDB.ref(`hnavs/${grandChildSnaphotKey}`).update({
+                                position: previousPosition
+                            })
+
+
+                            firebaseDB.ref(`hnavs/${this.props.match.params.id}`).update({
+                                position: newElement.value
+                            })
+
+                        }
+
+
+
+                    })
+
+
+                })
+
+
         }
 
         let validData = validate(newElement)
@@ -106,21 +200,21 @@ class AddEditHNav extends Component {
         }, 2000)
     }
 
-removeItem(itemToRemoveID) {
+    removeItem(itemToRemoveID) {
 
 
 
-    firebaseDB.ref('hnavs/' + itemToRemoveID).set(null)
-        .then(() => {
-            console.log('data removed')
+        firebaseDB.ref('hnavs/' + itemToRemoveID).set(null)
+            .then(() => {
+                console.log('data removed')
 
-            this.props.history.push('/admin_hostnav');
+                this.props.history.push('/admin_hostnav');
 
-        })
-        .catch((e) => {
-            console.log(e)
-        })
-}
+            })
+            .catch((e) => {
+                console.log(e)
+            })
+    }
 
     submitForm(event) {
         event.preventDefault();
@@ -129,7 +223,6 @@ removeItem(itemToRemoveID) {
         let formIsValid = true;
 
         for (let key in this.state.formdata) {
-
 
             dataToSubmit[key] = this.state.formdata[key].value;
             formIsValid = this.state.formdata[key].valid && formIsValid;
@@ -149,7 +242,6 @@ removeItem(itemToRemoveID) {
             } else {
                 ///Add Match
 
-
                 firebaseHNavs.push(dataToSubmit)
                     .then(() => {
                         this.props.history.push('/admin_hostnav');
@@ -158,11 +250,7 @@ removeItem(itemToRemoveID) {
                         this.setState({ formError: true })
                     })
 
-
-
-
             }
-
 
         } else {
             this.setState({
@@ -175,19 +263,30 @@ removeItem(itemToRemoveID) {
         return (
             <AdminLayout>
                 <div className="edit_dialog_wrapper">
-                    <h2>
-                        {this.state.formType} 
-                        <IconButton 
-                    onClick={(event) => this.removeItem(this.props.match.params.id)}
-                    >
-                    <DeleteIcon />
-                    </IconButton>
+                    <h2>{this.state.formType}
+                        {(this.state.formType === 'Edit') ? <IconButton
+                            onClick={(event) => this.removeItem(this.props.match.params.id)}
+                        >
+                            <DeleteIcon />
+                        </IconButton> :
+                            null}
+
                     </h2>
                     <div>
                         <form onSubmit={(event) => this.submitForm(event)}>
                             <FormField
                                 id={'title'}
                                 formdata={this.state.formdata.title}
+                                change={(element) => this.updateForm(element)}
+                            />
+                            <FormField
+                                id={'link'}
+                                formdata={this.state.formdata.link}
+                                change={(element) => this.updateForm(element)}
+                            />
+                            <FormField
+                                id={'position'}
+                                formdata={this.state.formdata.position}
                                 change={(element) => this.updateForm(element)}
                             />
                             <div className="success_label">

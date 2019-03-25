@@ -14,7 +14,7 @@ import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 
-
+import NavQuery from './NavQuery';
 
 class Header extends Component {
 
@@ -35,8 +35,8 @@ class Header extends Component {
     }
 
     handleClick = () => {
-        if(window.location.pathname == '/dashboard'
-            || window.location.pathname == '/sign_in'
+        if(window.location.pathname === '/dashboard'
+            || window.location.pathname ==='/sign_in'
             || window.location.pathname.includes('admin')) {
             this.setState({
                 headerShow: true
@@ -49,8 +49,8 @@ class Header extends Component {
     }
         handleScroll = () => {
             if(window.scrollY > 0
-                || window.location.pathname == '/sign_in'
-                || window.location.pathname == '/dashboard'
+                || window.location.pathname === '/sign_in'
+                || window.location.pathname === '/dashboard'
                 || window.location.pathname.includes('admin')) {
                 this.setState({
                     headerShow: true
@@ -88,8 +88,7 @@ class Header extends Component {
                             <div className="sublogo_font">Medieval Group</div>
                         </Link>
                         </div>
-
-
+                        <NavQuery/>
                     <Link to="/sign_in" className="link_main"><PermIdentity /></Link>
 
 

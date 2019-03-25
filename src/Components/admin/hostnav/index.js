@@ -10,11 +10,9 @@ import Paper from '@material-ui/core/Paper';
 
 import CircularProgress from '@material-ui/core/CircularProgress';
 
-import { firebaseHNavs, firebaseDB } from '../../../firebase';
+import { firebaseHNavs} from '../../../firebase';
 import { firebaseLooper, reverseArray } from '../../ui/misc';
 
-import DeleteIcon from '@material-ui/icons/Delete';
-import IconButton from '@material-ui/core/IconButton';
 
 class AdminHNavs extends Component {
 
@@ -25,32 +23,17 @@ class AdminHNavs extends Component {
     }
 
     componentDidMount() {
-        firebaseHNavs.once('value')
+        firebaseHNavs.orderByChild('position').once('value')
             .then(snapshot => {
                 const menuitems = firebaseLooper(snapshot);
 
                 this.setState({
                     isloading: false,
-                    menuitems: reverseArray(menuitems)
+                    menuitems
                 })
             })
     }
 
-    removeItem(itemToRemoveID) {
-
-
-
-        firebaseDB.ref('hnavs/' + itemToRemoveID).set(null)
-            .then(() => {
-                console.log('data removed')
-
-                this.props.history.push('/admin_hostnav');
-
-            })
-            .catch((e) => {
-                console.log(e)
-            })
-    }
 
     render() {
         return (
@@ -61,6 +44,7 @@ class AdminHNavs extends Component {
                             <TableHead>
                                 <TableRow>
                                     <TableCell>Name</TableCell>
+                                    <TableCell>Position</TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
@@ -69,11 +53,11 @@ class AdminHNavs extends Component {
                                     this.state.menuitems ?
                                         this.state.menuitems.map((menuitem, i) => (
                                             <TableRow key={i}>
-                                                <TableCell>
+                                                <TableCell className='main_cell'>
                                                     <Link to={`/admin_hostnav/edit_hnav/${menuitem.id}`}>
 
                                                         {menuitem.title}</Link></TableCell>
-
+                                                        <TableCell>{menuitem.position}</TableCell>
                                             </TableRow>
 
                                         ))

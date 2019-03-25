@@ -25,6 +25,19 @@
             "url": "/admin_slider/add_slider"
           }
         ]
+      },
+      {
+        "name": "Description",
+        "children": [
+          {
+            "name": "List",
+            "url": "/admin_desc"
+          },
+          {
+            "name": "Add",
+            "url": "/admin_desc/add_desc"
+          }
+        ]
       }
     ]
   }
