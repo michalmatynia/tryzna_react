@@ -58,6 +58,10 @@ export const validate = (element) => {
     }
 
     if(element.validation.required){
+
+        console.log('frefer')
+console.log(element )
+
         const valid = element.value.trim() !== '';
         const message = `${!valid ? 'This field is required':''}`;
         error = !valid ? [valid,message]: error;

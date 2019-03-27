@@ -8,7 +8,7 @@ import { scroller } from 'react-scroll';
 
 // Firebase
 import { firebaseHNavs } from '../../firebase';
-import { firebaseLooper, reverseArray } from '../ui/misc';
+import { firebaseLooper } from '../ui/misc';
 
 import Fade from 'react-reveal/Fade';
 

@@ -5,7 +5,7 @@ import FormField from '../../ui/formFields';
 import { validate } from '../../ui/misc';
 
 import { firebaseDB, firebaseHNavs } from '../../../firebase'
-import { firebaseLooper } from '../../ui/misc';
+
 // Icons
 import DeleteIcon from '@material-ui/icons/Delete';
 import IconButton from '@material-ui/core/IconButton';
@@ -13,7 +13,7 @@ import IconButton from '@material-ui/core/IconButton';
 class AddEditHNav extends Component {
 
     state = {
-        matchId: '',
+        menuitemId: '',
         formType: '',
         formError: false,
         formSuccess: '',
@@ -59,16 +59,7 @@ class AddEditHNav extends Component {
                     name: 'select_position',
                     type: 'select',
                     options: [
-                        { key: "1", value: "1" },
-                        { key: "2", value: "2" },
-                        { key: "3", value: "3" },
-                        { key: "4", value: "4" },
-                        { key: "5", value: "5" },
-                        { key: "6", value: "6" },
-                        { key: "7", value: "7" },
-                        { key: "8", value: "8" },
-                        { key: "9", value: "9" },
-                        { key: "10", value: "10" },
+                        { key: '', value: '' }
                     ]
                 },
                 validation: {
@@ -96,15 +87,41 @@ class AddEditHNav extends Component {
         })
     }
 
+componentWillMount(){
+
+    const newFormdata = { ...this.state.formdata }
+
+    // Format the position Selector
+firebaseDB.ref('hnavs').orderByChild('position').once('value')
+.then((snapshot) => {
+
+    let counter = 1;
+    let newOptionAr = []
+
+    snapshot.forEach(() => {
+        newOptionAr.push({key: counter, value: counter})
+        counter = counter + 1;
+    })
+
+    newFormdata.position.config.options = newOptionAr
+
+    this.setState({
+        formdata: newFormdata
+    })
+})
+   
+}
 
     componentDidMount() {
         const menuitemId = this.props.match.params.id;
 
-
         if (!menuitemId) {
+
+// Set the Form Type
             this.setState({
                 formType: 'Add'
             })
+
         } else {
             firebaseDB.ref(`hnavs/${menuitemId}`).once('value')
                 .then(snapshot => {
@@ -113,7 +130,6 @@ class AddEditHNav extends Component {
         }
 
     }
-
 
     updateForm(element, content = '') {
 
@@ -139,16 +155,8 @@ class AddEditHNav extends Component {
                         counter = counter + 1;
                     })
 
-                    /*              
-                    // CUrrent Title
-                    console.log(newFormdata.title.value)
-                    // Current Previous position
-                    console.log(previousPosition)
-                    // Current new position
-                    console.log(newElement.value)
-                    // Number of all menu items
-                    */
 
+                    // Update position on two elements
                     snapshot.forEach((childSnapshot) => {
 
                         let grandChildSnaphot = childSnapshot.val()
@@ -164,17 +172,10 @@ class AddEditHNav extends Component {
                             firebaseDB.ref(`hnavs/${this.props.match.params.id}`).update({
                                 position: newElement.value
                             })
-
                         }
-
-
-
                     })
 
-
                 })
-
-
         }
 
         let validData = validate(newElement)

@@ -17,12 +17,10 @@ const config = {
 const firebaseDB = firebase.database();
 const firebaseHNavs = firebaseDB.ref('hnavs');
 const firebaseSlider = firebaseDB.ref('slider');
-const firebaseTeams = firebaseDB.ref('teams');
 
 export {
     firebase,
     firebaseHNavs,
     firebaseSlider,
-    firebaseTeams,
     firebaseDB
 }

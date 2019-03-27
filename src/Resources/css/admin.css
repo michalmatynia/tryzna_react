@@ -79,7 +79,10 @@ text-decoration-line: none;
     color: #282828;
   }
 
- 
+ .admin_container .main_cell img {
+   width: 100px;
+   
+ }
 .admin_container .main_cell:hover  {
   background-color: #b6b6b6;
     transition: 0.3s;

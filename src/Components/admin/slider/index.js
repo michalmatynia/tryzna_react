@@ -10,8 +10,7 @@ import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 
 import CircularProgress from '@material-ui/core/CircularProgress';
-
-import { firebaseSlider } from '../../../firebase';
+import { firebaseSlider, firebaseDB, firebase } from '../../../firebase';
 import { firebaseLooper, reverseArray } from '../../ui/misc';
 
 class AdminSlider extends Component {
@@ -25,12 +24,36 @@ class AdminSlider extends Component {
         firebaseSlider.once('value')
             .then((snapshot) => {
                 const slides = firebaseLooper(snapshot);
+
                 this.setState({
                     isloading: false,
                     slides: reverseArray(slides)
-                })
+                })   
             })
+
     }
+
+getThumbnail(thumbnail, slideId) {
+
+
+    firebaseSlider.once('value')
+    .then((snapshot) => {
+        const slides = firebaseLooper(snapshot);
+
+        firebase.storage().ref('slides')
+        .child(slides[0].image).getDownloadURL()
+        .then(url => {
+            slides[0].url = url
+
+            this.setState({
+                isloading: false,
+                slides: reverseArray(slides)
+            })
+        })
+
+        
+    })
+}
 
     render() {
 
@@ -41,10 +64,8 @@ class AdminSlider extends Component {
                         <Table>
                             <TableHead>
                                 <TableRow>
-                                    <TableCell>First name</TableCell>
-                                    <TableCell>Last name</TableCell>
-                                    <TableCell>Number</TableCell>
-                                    <TableCell>Postion</TableCell>
+                                    <TableCell>Thumbnail</TableCell>
+                                    <TableCell>Position</TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
@@ -52,15 +73,12 @@ class AdminSlider extends Component {
                                     this.state.slides ?
                                         this.state.slides.map((slide, i) => (
                                             <TableRow key={i}>
-                                                <TableCell><Link to={`/admin_slider/edit_slider/${slide.id}`}>
-                                                {slide.name}
+                                                <TableCell className='main_cell'><Link to={`/admin_slider/edit_slider/${slide.id}`}>
+                                                {this.getThumbnail()}
+                                                <img src={slide.url}/>
+                                                {console.log(slide)}
                                                 </Link>
                                                 </TableCell>
-                                                <TableCell><Link to={`/admin_slider/edit_slider/${slide.id}`}>
-                                                {slide.lastname}
-                                                </Link>
-                                                </TableCell>
-                                                <TableCell>{slide.number}</TableCell>
                                                 <TableCell>{slide.position}</TableCell>
 
                                             </TableRow>

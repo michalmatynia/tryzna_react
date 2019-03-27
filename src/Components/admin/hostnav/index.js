@@ -10,8 +10,8 @@ import Paper from '@material-ui/core/Paper';
 
 import CircularProgress from '@material-ui/core/CircularProgress';
 
-import { firebaseHNavs} from '../../../firebase';
-import { firebaseLooper, reverseArray } from '../../ui/misc';
+import { firebaseHNavs } from '../../../firebase';
+import { firebaseLooper } from '../../ui/misc';
 
 
 class AdminHNavs extends Component {
@@ -57,7 +57,7 @@ class AdminHNavs extends Component {
                                                     <Link to={`/admin_hostnav/edit_hnav/${menuitem.id}`}>
 
                                                         {menuitem.title}</Link></TableCell>
-                                                        <TableCell>{menuitem.position}</TableCell>
+                                                <TableCell>{menuitem.position}</TableCell>
                                             </TableRow>
 
                                         ))

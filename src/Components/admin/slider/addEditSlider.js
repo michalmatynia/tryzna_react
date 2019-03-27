@@ -5,98 +5,55 @@ import FormField from '../../ui/formFields';
 import { validate } from '../../ui/misc';
 
 import Fileuploader from '../../ui/fileuploader';
-import { firebaseSlider , firebaseDB, firebase } from '../../../firebase';
+import { firebaseSlider, firebaseDB, firebase } from '../../../firebase';
+
+// Icons
+import DeleteIcon from '@material-ui/icons/Delete';
+import IconButton from '@material-ui/core/IconButton';
 
 class AddEditSlider extends Component {
 
     state = {
-        slideId:'',
-        formType:'',
+        slideId: '',
+        formType: '',
         formError: false,
-        formSuccess:'',
-        defaultImg:'',
-        formdata:{
-            name:{
-                element:'input',
-                value:'',
-                config:{
-                    label: 'Player Name',
-                    name:'name_input',
-                    type: 'text'
-                },
-                validation:{
-                    required: true
-                },
-                valid: false,
-                validationMessage:'',
-                showlabel: true
-            },
-            lastname:{
-                element:'input',
-                value:'',
-                config:{
-                    label: 'Player Last name',
-                    name:'lastname_input',
-                    type: 'text'
-                },
-                validation:{
-                    required: true
-                },
-                valid: false,
-                validationMessage:'',
-                showlabel: true
-            },
-            number:{
-                element:'input',
-                value:'',
-                config:{
-                    label: 'Player number',
-                    name:'number_input',
-                    type: 'text'
-                },
-                validation:{
-                    required: true
-                },
-                valid: false,
-                validationMessage:'',
-                showlabel: true
-            },
-            position:{
-                element:'select',
-                value:'',
-                config:{
+        formSuccess: '',
+        defaultImg: '',
+        formdata: {
+            position: {
+                element: 'select',
+                value: '',
+                config: {
                     label: 'Select a position',
-                    name:'select_position',
+                    name: 'select_position',
                     type: 'select',
                     options: [
-                        {key:"Keeper",value:"Keeper"},
-                        {key:"Defence",value:"Defence"},
-                        {key:"Midfield",value:"Midfield"},
-                        {key:"Striker",value:"Striker"}
+                        { key: '', value: '' }
                     ]
                 },
-                validation:{
+                validation: {
                     required: true
                 },
                 valid: false,
-                validationMessage:'',
+                validationMessage: '',
                 showlabel: true
             },
-            image:{
-                element:'image',
-                value:'',
-                validation:{
+            image: {
+                element: 'image',
+                value: '',
+                validation: {
                     required: true
                 },
-                valid:false
+                valid: false
             }
         }
     }
 
-    updateFields = (slide, slideId, formType , defaultImg) =>{
-        const newFormdata = { ...this.state.formdata}
+    updateFields = (slide, slideId, formType, defaultImg) => {
+        const newFormdata = { ...this.state.formdata }
 
-        for(let key in newFormdata){
+
+        for (let key in newFormdata) {
             newFormdata[key].value = slide[key];
             newFormdata[key].valid = true
         }
@@ -109,46 +66,94 @@ class AddEditSlider extends Component {
         })
     }
 
-
-    componentDidMount(){
+    componentWillMount() {
         const slideId = this.props.match.params.id;
 
-        if(!slideId){
+        const newFormdata = { ...this.state.formdata }
+
+        // Format the position Selector
+        firebaseDB.ref('slider').orderByChild('position').once('value')
+            .then((snapshot) => {
+
+                let counter = 1;
+                let newOptionAr = []
+
+                snapshot.forEach(() => {
+
+                    newOptionAr.push({ key: counter, value: counter })
+                    counter = counter + 1;
+
+                    if (!slideId) {
+                        newOptionAr.push({ key: counter, value: counter })
+                        counter = counter + 1;
+                    }
+
+
+                })
+
+                if (newOptionAr && newOptionAr.length) {
+                    newFormdata.position.config.options = newOptionAr
+                } else {
+                    newOptionAr = [{ key: 1, value: 1 }]
+                    newFormdata.position.config.options = newOptionAr
+                }
+
+
+                this.setState({
+                    formdata: newFormdata
+                })
+
+            })
+
+    }
+
+    componentDidMount() {
+        const slideId = this.props.match.params.id;
+        
+        if (!slideId) {
             this.setState({
-                formType:'Add slide'
+                formType: 'Add'
             })
         } else {
-           firebaseDB.ref(`slider/${slideId}`).once('value')
-           .then(snapshot => {
-               const slideData = snapshot.val();
+            firebaseDB.ref(`slider/${slideId}`).once('value')
+                .then(snapshot => {
+                    const slideData = snapshot.val();
+                    
+console.log(slideData.image)
+console.log(typeof(slideData.image))  
+                    firebase.storage().ref('slides')
+                        .child(slideData.image).getDownloadURL()
+                        .then(url => {
+                            this.updateFields(slideData, slideId, 'Edit', url)
+                        }).catch(e => {
 
-                firebase.storage().ref('slider')
-                .child(slideData.image).getDownloadURL()
-                .then( url => {
-                    this.updateFields(slideData,slideId,'Edit slide',url)
-                }).catch( e => {
-                    this.updateFields({
-                        ...slideData,
-                        image:''
-                    },slideId,'Edit slide','')
+                            this.updateFields({
+                                ...slideData,
+                                image: ''
+                            }, slideId, 'Edit', '')
+                        })
                 })
-           })
         }
 
     }
 
 
-    updateForm(element, content = ''){
-        const newFormdata = {...this.state.formdata}
-        const newElement = { ...newFormdata[element.id]}
+    updateForm(element, content = '') {
+        const newFormdata = { ...this.state.formdata }
+        const newElement = { ...newFormdata[element.id] }
 
-        if(content === ''){
+        if (content === '') {
             newElement.value = element.event.target.value;
         } else {
             newElement.value = content
         }
-        
+
+
+        // console.log(this.state.formdata.position.valid)
+        // console.log(this.state.formdata.image.valid)
+
         let validData = validate(newElement)
+        // console.log(newElement)
         newElement.valid = validData[0];
         newElement.validationMessage = validData[1]
 
@@ -158,6 +163,7 @@ class AddEditSlider extends Component {
             formError: false,
             formdata: newFormdata
         })
+
     }
 
 
@@ -165,43 +171,67 @@ class AddEditSlider extends Component {
         this.setState({
             formSuccess: message
         });
-        setTimeout(()=>{
+        setTimeout(() => {
             this.setState({
-                formSuccess:''
+                formSuccess: ''
             });
-        },2000)
+        }, 2000)
 
     }
+    removeItem(itemToRemoveID) {
 
-    submitForm(event){
+
+
+        firebaseDB.ref('slider/' + itemToRemoveID).set(null)
+            .then(() => {
+                console.log('data removed')
+
+                this.props.history.push('/admin_slider');
+
+            })
+            .catch((e) => {
+                console.log(e)
+            })
+    }
+    submitForm(event) {
         event.preventDefault();
-        
+
         let dataToSubmit = {};
         let formIsValid = true;
 
-        for(let key in this.state.formdata){
+        // console.log(this.state.formdata.position.valid)
+        // console.log(this.state.formdata.image.valid)
+
+        for (let key in this.state.formdata) {
             dataToSubmit[key] = this.state.formdata[key].value;
+            // console.log(formIsValid)
+            // console.log(this.state.formdata[key].valid)
             formIsValid = this.state.formdata[key].valid && formIsValid;
+
         }
-    
-        if(formIsValid){
-            if(this.state.formType === 'Edit player'){
-                firebaseDB.ref(`players/${this.state.playerId}`)
-                .update(dataToSubmit).then(()=>{
-                    this.successForm('Update correctly');
-                }).catch(e=>{
-                    this.setState({formError: true})
-                })
+
+
+
+
+        if (formIsValid) {
+            if (this.state.formType === 'Edit') {
+                firebaseDB.ref(`slider/${this.state.slideId}`)
+                    .update(dataToSubmit).then(() => {
+                        this.successForm('Update correctly');
+                    }).catch(e => {
+                        this.setState({ formError: true })
+                    })
             } else {
-                firebaseSlider.push(dataToSubmit).then(()=>{
+
+                firebaseSlider.push(dataToSubmit).then(() => {
                     this.props.history.push('/admin_slider')
-                }).catch(e=>{
+                }).catch(e => {
                     this.setState({
                         formError: true
                     })
                 })
             }
-           
+
         } else {
             this.setState({
                 formError: true
@@ -210,74 +240,59 @@ class AddEditSlider extends Component {
     }
 
     resetImage = () => {
-        const newFormdata = {...this.state.formdata}
+        const newFormdata = { ...this.state.formdata }
         newFormdata['image'].value = '';
         newFormdata['image'].valid = false;
-        
+
         this.setState({
-            defaultImg:'',
+            defaultImg: '',
             formdata: newFormdata
         })
     }
 
     storeFilename = (filename) => {
-        this.updateForm({id:'image'},filename)
+        this.updateForm({ id: 'image' }, filename)
     }
 
     render() {
         return (
             <AdminLayout>
-                <div className="editplayers_dialog_wrapper">
-                    <h2>
-                        {this.state.formType}
+                <div className="edit_dialog_wrapper">
+                    <h2>{this.state.formType}
+                        {(this.state.formType === 'Edit') ? <IconButton
+                            onClick={(event) => this.removeItem(this.props.match.params.id)}
+                        >
+                            <DeleteIcon />
+                        </IconButton> :
+                            null}
+
                     </h2>
                     <div>
-                        <form onSubmit={(event)=> this.submitForm(event)}>
-            
+                        <form onSubmit={(event) => this.submitForm(event)}>
+
                             <Fileuploader
-                                dir="players"
-                                tag={"Player image"}
+                                dir="slides"
+                                tag={"Slide image"}
                                 defaultImg={this.state.defaultImg}
                                 defaultImgName={this.state.formdata.image.value}
-                                resetImage={()=> this.resetImage()}
-                                filename={(filename)=> this.storeFilename(filename)}
+                                resetImage={() => this.resetImage()}
+                                filename={(filename) => this.storeFilename(filename)}
                             />
-
-
-                            <FormField
-                                id={'name'}
-                                formdata={this.state.formdata.name}
-                                change={(element)=> this.updateForm(element)}
-                                
-                            />
-
-                            <FormField
-                                id={'lastname'}
-                                formdata={this.state.formdata.lastname}
-                                change={(element)=> this.updateForm(element)}
-                            />
-
-                            <FormField
-                                id={'number'}
-                                formdata={this.state.formdata.number}
-                                change={(element)=> this.updateForm(element)}
-                            />
-
                             <FormField
                                 id={'position'}
                                 formdata={this.state.formdata.position}
-                                change={(element)=> this.updateForm(element)}
+                                change={(element) => this.updateForm(element)}
                             />
 
-                        <div className="success_label">{this.state.formSuccess}</div>
-                            {this.state.formError ? 
+                            <div className="success_label">{this.state.formSuccess}</div>
+                            {this.state.formError ?
                                 <div className="error_label">
                                     Something is wrong
                                 </div>
                                 : ''
                             }
                             <div className="admin_submit">
-                                <button onClick={(event)=> this.submitForm(event)}>
+                                <button onClick={(event) => this.submitForm(event)}>
                                     {this.state.formType}
                                 </button>
                             </div>
