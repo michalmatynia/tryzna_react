@@ -13,47 +13,29 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import { firebaseSlider, firebaseDB, firebase } from '../../../firebase';
 import { firebaseLooper, reverseArray } from '../../ui/misc';
 
+import IndexThmb from './indexThumb';
+
 class AdminSlider extends Component {
 
     state = {
         isloading: true,
-        slides: []
+        slides: [],
+       
     }
 
     componentDidMount() {
-        firebaseSlider.once('value')
+        firebaseSlider.orderByChild('position').once('value')
             .then((snapshot) => {
                 const slides = firebaseLooper(snapshot);
 
                 this.setState({
                     isloading: false,
-                    slides: reverseArray(slides)
+                    slides
                 })   
             })
 
     }
 
-getThumbnail(thumbnail, slideId) {
-
-
-    firebaseSlider.once('value')
-    .then((snapshot) => {
-        const slides = firebaseLooper(snapshot);
-
-        firebase.storage().ref('slides')
-        .child(slides[0].image).getDownloadURL()
-        .then(url => {
-            slides[0].url = url
-
-            this.setState({
-                isloading: false,
-                slides: reverseArray(slides)
-            })
-        })
-
-        
-    })
-}
 
     render() {
 
@@ -74,9 +56,10 @@ getThumbnail(thumbnail, slideId) {
                                         this.state.slides.map((slide, i) => (
                                             <TableRow key={i}>
                                                 <TableCell className='main_cell'><Link to={`/admin_slider/edit_slider/${slide.id}`}>
-                                                {this.getThumbnail()}
-                                                <img src={slide.url}/>
-                                                {console.log(slide)}
+                                                <IndexThmb
+                                                thisId = {slide.id}
+                                                thisImage = {slide.image}
+                                                />
                                                 </Link>
                                                 </TableCell>
                                                 <TableCell>{slide.position}</TableCell>

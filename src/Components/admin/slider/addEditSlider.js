@@ -119,8 +119,7 @@ class AddEditSlider extends Component {
                 .then(snapshot => {
                     const slideData = snapshot.val();
                     
-console.log(slideData.image)
-console.log(typeof(slideData.image))  
+
                     firebase.storage().ref('slides')
                         .child(slideData.image).getDownloadURL()
                         .then(url => {
@@ -142,18 +141,44 @@ console.log(typeof(slideData.image))
         const newFormdata = { ...this.state.formdata }
         const newElement = { ...newFormdata[element.id] }
 
+        const previousPosition = newFormdata[element.id].value
+
         if (content === '') {
             newElement.value = element.event.target.value;
         } else {
             newElement.value = content
         }
 
+        if ((newElement.config.name === 'select_position') && (this.state.formType === 'Edit')) {
 
-        // console.log(this.state.formdata.position.valid)
-        // console.log(this.state.formdata.image.valid)
+            firebaseDB.ref('slider').orderByChild('position').once('value')
+                .then((snapshot) => {
+
+                    // Update position on two elements
+                    snapshot.forEach((childSnapshot) => {
+
+                        let grandChildSnaphot = childSnapshot.val()
+                        let grandChildSnaphotKey = childSnapshot.key
+
+       
+                        if ((newFormdata.image.value !== grandChildSnaphot.image) && (grandChildSnaphot.position === newElement.value)) {
+
+                            firebaseDB.ref(`slider/${grandChildSnaphotKey}`).update({
+                                position: previousPosition
+                            })
+
+
+                            firebaseDB.ref(`slider/${this.props.match.params.id}`).update({
+                                position: newElement.value
+                            })
+                        }
+                    })
+
+                })
+        }
 
         let validData = validate(newElement)
-        // console.log(newElement)
+
         newElement.valid = validData[0];
         newElement.validationMessage = validData[1]
 
@@ -179,8 +204,6 @@ console.log(typeof(slideData.image))
 
     }
     removeItem(itemToRemoveID) {
-
-
 
         firebaseDB.ref('slider/' + itemToRemoveID).set(null)
             .then(() => {
@@ -209,9 +232,6 @@ console.log(typeof(slideData.image))
             formIsValid = this.state.formdata[key].valid && formIsValid;
 
         }
-
-
-
 
         if (formIsValid) {
             if (this.state.formType === 'Edit') {
