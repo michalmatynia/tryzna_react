@@ -10,27 +10,27 @@ import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 
 import CircularProgress from '@material-ui/core/CircularProgress';
-import { firebaseSlider } from '../../../firebase';
+import { firebaseDB } from '../../../firebase';
 import { firebaseLooper } from '../../ui/misc';
 
-import IndexThmb from './indexThumb';
+// import IndexThmb from './indexThumb';
 
-class AdminSlider extends Component {
+class AdminPortfolio extends Component {
 
     state = {
         isloading: true,
-        slides: [],
+        items: [],
        
     }
 
     componentDidMount() {
-        firebaseSlider.orderByChild('position').once('value')
+        firebaseDB.ref('portfolio').once('value')
             .then((snapshot) => {
-                const slides = firebaseLooper(snapshot);
+                const items = firebaseLooper(snapshot);
 
                 this.setState({
                     isloading: false,
-                    slides
+                    items
                 })   
             })
 
@@ -47,22 +47,23 @@ class AdminSlider extends Component {
                             <TableHead>
                                 <TableRow>
                                     <TableCell>Thumbnail</TableCell>
-                                    <TableCell>Position</TableCell>
+                                    <TableCell>Title</TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
                                 {
-                                    this.state.slides ?
-                                        this.state.slides.map((slide, i) => (
+                                    this.state.items ?
+                                        this.state.items.map((item, i) => (
                                             <TableRow key={i}>
-                                                <TableCell className='main_cell'><Link to={`/admin_slider/edit_slider/${slide.id}`}>
-                                                <IndexThmb
+                                                <TableCell className='main_cell'><Link to={`/admin_portfolio/edit_portfolio/${item.id}`}>
+                                                image
+                                                {/* <IndexThmb
                                                 thisId = {slide.id}
                                                 thisImage = {slide.image}
-                                                />
+                                                /> */}
                                                 </Link>
                                                 </TableCell>
-                                                <TableCell>{slide.position}</TableCell>
+                                                <TableCell>{item.title}</TableCell>
 
                                             </TableRow>
 
@@ -87,4 +88,4 @@ class AdminSlider extends Component {
     }
 }
 
-export default AdminSlider;
+export default AdminPortfolio;

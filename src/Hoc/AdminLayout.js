@@ -1,5 +1,5 @@
 import React from 'react';
-import AdminNav from '../Components/admin/nav/AdminNav';
+import AdminNav from '../Components/admin/admin_nav/AdminNav';
 const AdminLayout = (props) => {
     return (
         <div className="admin_container">

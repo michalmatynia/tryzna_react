@@ -38,6 +38,19 @@
             "url": "/admin_desc/add_desc"
           }
         ]
+      },
+      {
+        "name": "Portfolio",
+        "children": [
+          {
+            "name": "List",
+            "url": "/admin_portfolio"
+          },
+          {
+            "name": "Add",
+            "url": "/admin_portfolio/add_portfolio"
+          }
+        ]
       }
     ]
   }

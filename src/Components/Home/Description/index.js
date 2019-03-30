@@ -1,18 +1,50 @@
-import React from 'react';
+import React, { Component } from 'react';
 import Fade from 'react-reveal/Fade';
-const Description = () => {
-    return (
-        <Fade>
+
+import { firebaseDB } from '../../../firebase';
+import { firebaseLooper } from '../../ui/misc';
+
+class Description extends Component {
+
+    state = {
+        isloading: true,
+        description: [],
+    }
+
+    componentDidMount() {
+        firebaseDB.ref('desc').once('value')
+            .then((snapshot) => {
+                const desc = firebaseLooper(snapshot);
+
+                this.setState({
+                    isloading: false,
+                    desc
+                })
+            })
+    }
+
+    render() {
+        return (
+            <Fade>
         <div className="desc_wrapper">
-        <div className="center_wrapper">
-            <h2>Highlights</h2>
-            <div className="description">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-            </div>
+        
+
+        {
+                        this.state.desc ?
+                            this.state.desc.map((item, i) => (
+                                <div key={i} className="center_wrapper">
+                                <h2>{item.title}</h2>
+                                <div className="description">
+                                {item.content}
+                                </div>
+                                </div>
+                            ))
+                            : null
+                    }
         </div>
-        </div>
-        </Fade>
-    );
-};
+            </Fade>
+        );
+    }
+}
 
 export default Description;

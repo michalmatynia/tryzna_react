@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-
 import { Link } from 'react-router-dom';
 import AdminLayout from '../../../Hoc/AdminLayout'
 import Table from '@material-ui/core/Table';
@@ -10,35 +9,33 @@ import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 
 import CircularProgress from '@material-ui/core/CircularProgress';
-import { firebaseSlider } from '../../../firebase';
+
+import { firebaseDB } from '../../../firebase';
 import { firebaseLooper } from '../../ui/misc';
 
-import IndexThmb from './indexThumb';
 
-class AdminSlider extends Component {
+class AdminDesc extends Component {
 
     state = {
         isloading: true,
-        slides: [],
-       
+        items: [],
+        tableMessage: ''
     }
 
     componentDidMount() {
-        firebaseSlider.orderByChild('position').once('value')
-            .then((snapshot) => {
-                const slides = firebaseLooper(snapshot);
+        firebaseDB.ref('desc').once('value')
+            .then(snapshot => {
+                const items = firebaseLooper(snapshot);
 
                 this.setState({
                     isloading: false,
-                    slides
-                })   
+                    items
+                })
             })
-
     }
 
 
     render() {
-
         return (
             <AdminLayout>
                 <div>
@@ -46,24 +43,19 @@ class AdminSlider extends Component {
                         <Table>
                             <TableHead>
                                 <TableRow>
-                                    <TableCell>Thumbnail</TableCell>
-                                    <TableCell>Position</TableCell>
+                                    <TableCell>Title</TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
                                 {
-                                    this.state.slides ?
-                                        this.state.slides.map((slide, i) => (
-                                            <TableRow key={i}>
-                                                <TableCell className='main_cell'><Link to={`/admin_slider/edit_slider/${slide.id}`}>
-                                                <IndexThmb
-                                                thisId = {slide.id}
-                                                thisImage = {slide.image}
-                                                />
-                                                </Link>
-                                                </TableCell>
-                                                <TableCell>{slide.position}</TableCell>
 
+                                    this.state.items ?
+                                        this.state.items.map((item, i) => (
+                                            <TableRow key={i}>
+                                                <TableCell className='main_cell'>
+                                                    <Link to={`/admin_desc/edit_desc/${item.id}`}>
+
+                                                        {item.title}</Link></TableCell>
                                             </TableRow>
 
                                         ))
@@ -82,9 +74,8 @@ class AdminSlider extends Component {
                     </div>
                 </div>
             </AdminLayout>
-
         );
     }
 }
 
-export default AdminSlider;
+export default AdminDesc;

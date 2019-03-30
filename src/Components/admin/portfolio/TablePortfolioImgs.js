@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 
 import { Link } from 'react-router-dom';
-import AdminLayout from '../../../Hoc/AdminLayout'
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -10,37 +9,60 @@ import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 
 import CircularProgress from '@material-ui/core/CircularProgress';
-import { firebaseSlider } from '../../../firebase';
 import { firebaseLooper } from '../../ui/misc';
+import { firebaseDB, firebase } from '../../../firebase';
 
-import IndexThmb from './indexThumb';
+// Components
+import InsertPortfolioImgs from './InsertPortfolioImgs';
 
-class AdminSlider extends Component {
+class TablePortfolioImgs extends Component {
 
     state = {
+        entityID: '',
+        parentID: '',
         isloading: true,
-        slides: [],
+        portfolio_imgs: [],
        
     }
-
     componentDidMount() {
-        firebaseSlider.orderByChild('position').once('value')
-            .then((snapshot) => {
-                const slides = firebaseLooper(snapshot);
+        const parentID = this.props.entityID;
+        let portfolio_imgs = [];
 
-                this.setState({
-                    isloading: false,
-                    slides
-                })   
-            })
+        firebaseDB.ref('portfolio_imgs').orderByChild("parentID").equalTo(parentID).once("value", function(snapshot) {
+            // console.log(snapshot.val());
+            let loop = firebaseLooper(snapshot) ;
+            //portfolio_imgs[portfolio_imgs.length] = firebaseLooper(snapshot) ;
+            portfolio_imgs.push(firebaseLooper(snapshot)) ;
+
+
+ 
+/*             snapshot.forEach((childSnapshot) => {
+
+                
+
+                let grandChildSnaphot = childSnapshot.val()
+                let grandChildSnaphotKey = childSnapshot.key
+
+            }) */
+
+          });
+          
+          console.log(typeof(portfolio_imgs));
+          console.log(this.state.portfolio_imgs);
+
+          this.setState({
+            isloading: false,
+            portfolio_imgs: portfolio_imgs[0]
+        })   
+
+/*         this.setState({
+            parentID
+        }) */
 
     }
 
-
     render() {
-
         return (
-            <AdminLayout>
                 <div>
                     <Paper>
                         <Table>
@@ -51,18 +73,15 @@ class AdminSlider extends Component {
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {
-                                    this.state.slides ?
-                                        this.state.slides.map((slide, i) => (
+           {
+                                    this.state.portfolio_imgs ?
+                                        this.state.portfolio_imgs.map((img, i) => (
                                             <TableRow key={i}>
-                                                <TableCell className='main_cell'><Link to={`/admin_slider/edit_slider/${slide.id}`}>
-                                                <IndexThmb
-                                                thisId = {slide.id}
-                                                thisImage = {slide.image}
-                                                />
+                                                <TableCell className='main_cell'><Link to={`/admin_portfolio_img/edit_portfolio_img/${img.id}`}>
+                                                {img.filename}
                                                 </Link>
                                                 </TableCell>
-                                                <TableCell>{slide.position}</TableCell>
+                                                <TableCell>position</TableCell>
 
                                             </TableRow>
 
@@ -81,10 +100,8 @@ class AdminSlider extends Component {
                         }
                     </div>
                 </div>
-            </AdminLayout>
-
         );
     }
 }
 
-export default AdminSlider;
+export default TablePortfolioImgs;

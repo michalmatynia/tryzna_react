@@ -4,27 +4,32 @@ import AdminLayout from '../../../Hoc/AdminLayout';
 import FormField from '../../ui/formFields';
 import { validate } from '../../ui/misc';
 
-import { firebaseDB, firebaseHNavs } from '../../../firebase'
+import Fileuploader from '../../ui/fileuploader';
+import { firebaseSlider, firebaseDB, firebase } from '../../../firebase';
+
+import TablePortfolioImgs from './TablePortfolioImgs';
 
 // Icons
 import DeleteIcon from '@material-ui/icons/Delete';
 import IconButton from '@material-ui/core/IconButton';
+import { fdatasync } from 'fs';
 
-class AddEditHNav extends Component {
+
+class EditPortfolio extends Component {
 
     state = {
-        menuitemId: '',
+        entityID: '',
         formType: '',
         formError: false,
         formSuccess: '',
-        teams: [],
+        defaultImg: '',
         formdata: {
             title: {
                 element: 'input',
                 value: '',
                 config: {
                     label: 'Title',
-                    name: 'menuitem_title',
+                    name: 'desc_title',
                     type: 'text',
                 },
                 validation: {
@@ -35,13 +40,15 @@ class AddEditHNav extends Component {
                 showlabel: true
 
             },
-            link: {
-                element: 'input',
+            content: {
+                element: 'textarea',
                 value: '',
                 config: {
-                    label: 'Link',
-                    name: 'menuitem_link',
-                    type: 'text',
+                    label: 'Description',
+                    name: 'desc_text',
+                    type: 'textarea',
+                    rows: 10,
+                    cols: 100
                 },
                 validation: {
                     required: false,
@@ -51,88 +58,51 @@ class AddEditHNav extends Component {
                 showlabel: true
 
             },
-            position: {
-                element: 'select',
+            image: {
+                element: 'image',
                 value: '',
-                config: {
-                    label: 'Select a position',
-                    name: 'select_position',
-                    type: 'select',
-                    options: [
-                        { key: '', value: '' }
-                    ]
-                },
                 validation: {
-                    required: true
+                    required: false
                 },
-                valid: false,
-                validationMessage: '',
-                showlabel: true
+                valid: true
             }
         }
     }
 
-    updateFields = (menuitem, menuitemId, formType) => {
+    updateFields = (entity, entityID, formType) => {
         const newFormdata = { ...this.state.formdata }
 
         for (let key in newFormdata) {
-            newFormdata[key].value = menuitem[key];
+            newFormdata[key].value = entity[key];
             newFormdata[key].valid = true
         }
 
         this.setState({
-            menuitemId,
+            entityID,
             formType,
             formdata: newFormdata
         })
     }
 
-componentWillMount(){
-
-    const newFormdata = { ...this.state.formdata }
-
-    // Format the position Selector
-firebaseDB.ref('hnavs').orderByChild('position').once('value')
-.then((snapshot) => {
-
-    let counter = 1;
-    let newOptionAr = []
-
-    snapshot.forEach(() => {
-        newOptionAr.push({key: counter, value: counter})
-        counter = counter + 1;
-    })
-
-    newFormdata.position.config.options = newOptionAr
-
-    this.setState({
-        formdata: newFormdata
-    })
-})
-   
-}
-
     componentDidMount() {
-        const menuitemId = this.props.match.params.id;
+        const entityID = this.props.match.params.id;
 
-        if (!menuitemId) {
-
-// Set the Form Type
+        if (!entityID) {
             this.setState({
                 formType: 'Add'
             })
-
         } else {
-            firebaseDB.ref(`hnavs/${menuitemId}`).once('value')
+            firebaseDB.ref(`portfolio/${entityID}`).once('value')
                 .then(snapshot => {
-                    this.updateFields(snapshot.val(), menuitemId, 'Edit')
+                    this.updateFields(snapshot.val(), entityID, 'Edit')
                 })
         }
 
+
     }
 
-    updateForm(element, content = '') {
 
+    updateForm(element, content = '') {
         const newFormdata = { ...this.state.formdata }
         const newElement = { ...newFormdata[element.id] }
 
@@ -144,34 +114,8 @@ firebaseDB.ref('hnavs').orderByChild('position').once('value')
             newElement.value = content
         }
 
-        if ((newElement.config.name === 'select_position') && (this.state.formType === 'Edit')) {
-
-            firebaseDB.ref('hnavs').orderByChild('position').once('value')
-                .then((snapshot) => {
-
-                    // Update position on two elements
-                    snapshot.forEach((childSnapshot) => {
-
-                        let grandChildSnaphot = childSnapshot.val()
-                        let grandChildSnaphotKey = childSnapshot.key
-
-                        if ((newFormdata.title.value !== grandChildSnaphot.title) && (grandChildSnaphot.position === newElement.value)) {
-
-                            firebaseDB.ref(`hnavs/${grandChildSnaphotKey}`).update({
-                                position: previousPosition
-                            })
-
-
-                            firebaseDB.ref(`hnavs/${this.props.match.params.id}`).update({
-                                position: newElement.value
-                            })
-                        }
-                    })
-
-                })
-        }
-
         let validData = validate(newElement)
+
         newElement.valid = validData[0];
         newElement.validationMessage = validData[1]
 
@@ -181,28 +125,28 @@ firebaseDB.ref('hnavs').orderByChild('position').once('value')
             formError: false,
             formdata: newFormdata
         })
+
     }
-    successForm(message) {
+
+
+    successForm = (message) => {
         this.setState({
             formSuccess: message
         });
-
         setTimeout(() => {
             this.setState({
                 formSuccess: ''
             });
         }, 2000)
-    }
 
+    }
     removeItem(itemToRemoveID) {
 
-
-
-        firebaseDB.ref('hnavs/' + itemToRemoveID).set(null)
+        firebaseDB.ref(`portfolio/${itemToRemoveID}`).set(null)
             .then(() => {
                 console.log('data removed')
 
-                this.props.history.push('/admin_hostnav');
+                this.props.history.push('/admin_portfolio');
 
             })
             .catch((e) => {
@@ -218,27 +162,60 @@ firebaseDB.ref('hnavs').orderByChild('position').once('value')
 
         for (let key in this.state.formdata) {
 
+            
             dataToSubmit[key] = this.state.formdata[key].value;
             formIsValid = this.state.formdata[key].valid && formIsValid;
+            
         }
+
+
+        console.log(formIsValid);
+        console.log(dataToSubmit.image);
+
+        let portfolio_img = []
+
+        if (dataToSubmit.image) {
+
+            portfolio_img = {
+                filename: dataToSubmit.image,
+                parentID: this.state.entityID
+            }
+            dataToSubmit.image = '';
+        }
+
+        console.log(portfolio_img);
+
 
         if (formIsValid) {
             if (this.state.formType === 'Edit') {
-                firebaseDB.ref(`hnavs/${this.state.menuitemId}`)
+                firebaseDB.ref(`portfolio/${this.state.entityID}`)
                     .update(dataToSubmit)
                     .then(() => {
+
                         this.successForm('Updated correctly');
 
                     })
                     .catch((e) => {
                         this.setState({ formError: true })
                     })
-            } else {
-                ///Add Match
+                // Image Upload
 
-                firebaseHNavs.push(dataToSubmit)
+                if (portfolio_img) {
+                    firebaseDB.ref('portfolio_imgs').push(portfolio_img)
+                        .then(() => {
+                            this.successForm('Image Uploaded');
+                        })
+                        .catch((e) => {
+                            this.setState({ formError: true })
+                        })
+                }
+
+            } else {
+                ///Add Portfolio
+
+                firebaseDB.ref('portfolio').push(dataToSubmit)
                     .then(() => {
-                        this.props.history.push('/admin_hostnav');
+                        this.props.history.push('/admin_portfolio');
                     })
                     .catch((e) => {
                         this.setState({ formError: true })
@@ -249,8 +226,23 @@ firebaseDB.ref('hnavs').orderByChild('position').once('value')
         } else {
             this.setState({
                 formError: true
-            })
+            });
         }
+    }
+
+    resetImage = () => {
+        const newFormdata = { ...this.state.formdata }
+        newFormdata['image'].value = '';
+        newFormdata['image'].valid = false;
+
+        this.setState({
+            defaultImg: '',
+            formdata: newFormdata
+        })
+    }
+
+    storeFilename = (filename) => {
+        this.updateForm({ id: 'image' }, filename)
     }
 
     render() {
@@ -274,34 +266,43 @@ firebaseDB.ref('hnavs').orderByChild('position').once('value')
                                 change={(element) => this.updateForm(element)}
                             />
                             <FormField
-                                id={'link'}
-                                formdata={this.state.formdata.link}
+                                id={'content'}
+                                formdata={this.state.formdata.content}
                                 change={(element) => this.updateForm(element)}
                             />
-                            <FormField
-                                id={'position'}
-                                formdata={this.state.formdata.position}
-                                change={(element) => this.updateForm(element)}
-                            />
-                            <div className="success_label">
-                                {this.state.formSuccess}
-                            </div>
+
+                            <div className="success_label">{this.state.formSuccess}</div>
                             {this.state.formError ?
                                 <div className="error_label">
-                                    Something is wrong</div>
-                                : null}
+                                    Something is wrong
+                                </div>
+                                : ''
+                            }
+                            {this.state.entityID ? 
+                            <Fileuploader
+                                dir="portfolio"
+                                parentID={this.state.entityID}
+                                tag='Insert Image'
+                                defaultImg={this.state.defaultImg}
+                                defaultImgName={this.state.formdata.image.value}
+                                resetImage={() => this.resetImage()}
+                                filename={(filename) => this.storeFilename(filename)}
+                            /> :
+                            null
+                        }
                             <div className="admin_submit">
                                 <button onClick={(event) => this.submitForm(event)}>
-                                    {this.state.formType}
+                                    Save
                                 </button>
                             </div>
                         </form>
-                    </div>
 
+                    </div>
+                    {this.state.entityID ? <TablePortfolioImgs entityID={this.state.entityID} /> : null}
                 </div>
             </AdminLayout>
         );
     }
 }
 
-export default AddEditHNav;
+export default EditPortfolio;

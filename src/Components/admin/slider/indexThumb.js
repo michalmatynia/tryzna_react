@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { firebaseSlider, firebaseDB, firebase } from '../../../firebase';
+import { firebase } from '../../../firebase';
 
 
 class indexThumb extends Component {
@@ -22,7 +22,7 @@ class indexThumb extends Component {
         
         return (
             <div>
-            <img src={this.state.url}/>
+            <img src={this.state.url} alt="thumbnail"/>
             </div>
         );
    }

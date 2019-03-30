@@ -1,65 +1,61 @@
-import React from 'react';
+import React, { Component } from 'react';
 import Slider from "react-slick";
 
-import slide_one from '../../../Resources/images/banner/banner01.jpg';
-import slide_two from '../../../Resources/images/banner/banner02.jpg';
-import slide_three from '../../../Resources/images/banner/banner03.jpg';
+import GetImageUrl from './GetImageUrl';
 
-const Carousel = () => {
+import { firebaseSlider } from '../../../firebase';
+import { firebaseLooper } from '../../ui/misc';
 
-    const settings = {
+class Carousel extends Component {
+
+    state = {
         dots: true,
         infinite: true,
         autoplay: true,
-        speed: 500
+        speed: 500,
+        isloading: true,
+        slides: [],
     }
 
-    return (
-        <div
-            className="carousel_wrapper"
-            style={{
-                height: `${window.innerHeight}px`,
-                width: `${window.innerWidth}px`,
-                overflow: 'hidden'
-            }}
-        >
-            <Slider {...settings}>
-                <div>
-                    <div
-                        className="carousel_image"
-                        style={{
-                            background: `url(${slide_one})`,
-                            height: `${window.innerHeight}px`                        }}
-                    >
-                    </div>
-                </div>
+    componentDidMount() {
+        firebaseSlider.orderByChild('position').once('value')
+            .then((snapshot) => {
+                const slides = firebaseLooper(snapshot);
 
-                <div>
-                    <div
-                        className="carousel_image"
-                        style={{
-                            background: `url(${slide_two})`,
-                            height: `${window.innerHeight}px`
-                        }}
-                    >
+                this.setState({
+                    isloading: false,
+                    slides
+                })
+            })
+    }
 
-                    </div>
-                </div>
-
-                <div>
-                    <div
-                        className="carousel_image"
-                        style={{
-                            background: `url(${slide_three})`,
-                            height: `${window.innerHeight}px`
-                        }}
-                    >
-
-                    </div>
-                </div>
-            </Slider>
-        </div>
-    );
-};
+    render() {
+        return (
+            <div
+                className="carousel_wrapper"
+                style={{
+                    height: `${window.innerHeight}px`,
+                    width: `${window.innerWidth}px`,
+                    overflow: 'hidden'
+                }}
+            >
+                <Slider {...this.state}>
+                    {
+                        this.state.slides ?
+                            this.state.slides.map((slide, i) => (
+                                
+                                <GetImageUrl key={i}
+                                thisId = {slide.id}
+                                thisImage = {slide.image}
+                                thisImageFolder = {'slides'}
+                                 />
+                            ))
+                            : null
+                    }
+                </Slider>
+            </div>
+        );
+    }
+}
 
 export default Carousel;

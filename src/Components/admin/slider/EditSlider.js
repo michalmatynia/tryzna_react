@@ -149,6 +149,7 @@ class AddEditSlider extends Component {
             newElement.value = content
         }
 
+        // Updating the Position
         if ((newElement.config.name === 'select_position') && (this.state.formType === 'Edit')) {
 
             firebaseDB.ref('slider').orderByChild('position').once('value')

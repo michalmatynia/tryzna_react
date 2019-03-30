@@ -67,7 +67,7 @@ class Fileuploader extends Component {
             <div>
                 { !this.state.fileURL ?
                     <div>
-                        <div className="label_inputs">{this.props.tag}</div>
+                        {this.props.tag ? <div className="label_inputs">{this.props.tag}</div> : null }
                         <FileUploader
                             accept="image/*"
                             name="image"
@@ -100,9 +100,9 @@ class Fileuploader extends Component {
                             src={this.state.fileURL}
                             alt={this.state.name}
                         />
-                        <div className="remove" onClick={()=>this.uploadAgain()}>
+                        <button className="remove" onClick={()=>this.uploadAgain()}>
                             Remove
-                        </div>
+                        </button>
                     </div>
 
                 :null

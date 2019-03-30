@@ -16,9 +16,15 @@ import AdminHNavs from './Components/admin/hostnav';
 import AddEditHNav from './Components/admin/hostnav/addEditHNav'
 
 import AdminSlider from './Components/admin/slider';
-import AddEditSlider from './Components/admin/slider/addEditSlider'
+import EditSlider from './Components/admin/slider/EditSlider'
 
-/* Admin Components */
+import AdminDesc from './Components/admin/desc';
+import EditDesc from './Components/admin/desc/EditDesc'
+
+import AdminPortfolio from './Components/admin/portfolio';
+import EditPortfolio from './Components/admin/portfolio/EditPortfolio';
+
+/* Other Components */
 
 import NotFound from './Components/ui/not_found'
 
@@ -32,10 +38,17 @@ const Routes = (props) => {
   <PrivateRoute {...props} path="/admin_hostnav/edit_hnav/:id" exact component={AddEditHNav}/>
 
   <PrivateRoute {...props} path="/admin_slider" exact component={AdminSlider}/>
-  <PrivateRoute {...props} path="/admin_slider/edit_slider/:id" exact component={AddEditSlider}/>
-  <PrivateRoute {...props} path="/admin_slider/add_slider" exact component={AddEditSlider}/>
+  <PrivateRoute {...props} path="/admin_slider/edit_slider/:id" exact component={EditSlider}/>
+  <PrivateRoute {...props} path="/admin_slider/add_slider" exact component={EditSlider}/>
 
- 
+  <PrivateRoute {...props} path="/admin_desc" exact component={AdminDesc}/>
+  <PrivateRoute {...props} path="/admin_desc/edit_desc/:id" exact component={EditDesc}/>
+  <PrivateRoute {...props} path="/admin_desc/add_desc" exact component={EditDesc}/>
+
+  <PrivateRoute {...props} path="/admin_portfolio" exact component={AdminPortfolio}/>
+  <PrivateRoute {...props} path="/admin_portfolio/edit_portfolio/:id" exact component={EditPortfolio}/>
+  <PrivateRoute {...props} path="/admin_portfolio/add_portfolio" exact component={EditPortfolio}/>
+
   <PrivateRoute {...props} path="/dashboard" exact component={Dashboard}/>
   <PublicRoute {...props} restricted={true} path="/sign_in" exact component={SignIn} />
 

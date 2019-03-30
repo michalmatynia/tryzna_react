@@ -214,6 +214,13 @@
     padding: 10px;
   }
   
+  .image_upload_container .remove:hover {
+
+    background: #F44336;
+    transition: 0.3s;
+
+  }
+
   .not_found_container {
     text-align: center;
     margin-top: 96px;

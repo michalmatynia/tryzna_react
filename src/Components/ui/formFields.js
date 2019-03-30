@@ -36,6 +36,23 @@ const FormField = ({ formdata, id, change }) => {
                     </div>
                 )
                 break;
+                case ('textarea'):
+                formTemplate = (
+                    <div>
+                        {formdata.showlabel ?
+                            <div className="label_inputs">
+                                {formdata.config.label}
+                            </div>
+                            : null}
+                        <textarea
+                            {...formdata.config}
+                            value={formdata.value}
+                            onChange={(event) => change({ event, id })}
+                        />
+                        {showError()}
+                    </div>
+                )
+                break;
             case ('select'):
                 formTemplate = (
                     <div>
