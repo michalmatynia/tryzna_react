@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { firebase } from '../../../firebase';
+import { firebase } from '../../firebase';
 
 
 class indexThumb extends Component {
@@ -9,7 +9,7 @@ class indexThumb extends Component {
     }
 
     componentDidMount(){
-        firebase.storage().ref('slides')
+        firebase.storage().ref(this.props.thisImageFolder)
         .child(this.props.thisImage).getDownloadURL()
         .then(url => {
             this.setState({

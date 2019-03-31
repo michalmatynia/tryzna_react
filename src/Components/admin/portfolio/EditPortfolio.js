@@ -12,7 +12,7 @@ import TablePortfolioImgs from './TablePortfolioImgs';
 // Icons
 import DeleteIcon from '@material-ui/icons/Delete';
 import IconButton from '@material-ui/core/IconButton';
-import { fdatasync } from 'fs';
+
 
 
 class EditPortfolio extends Component {
@@ -97,8 +97,6 @@ class EditPortfolio extends Component {
                     this.updateFields(snapshot.val(), entityID, 'Edit')
                 })
         }
-
-
     }
 
 
@@ -162,14 +160,11 @@ class EditPortfolio extends Component {
 
         for (let key in this.state.formdata) {
 
-            
             dataToSubmit[key] = this.state.formdata[key].value;
             formIsValid = this.state.formdata[key].valid && formIsValid;
             
         }
 
-
-       
 
         let portfolio_img = []
 
@@ -179,10 +174,8 @@ class EditPortfolio extends Component {
                 filename: dataToSubmit.image,
                 parentID: this.state.entityID
             }
-            dataToSubmit.image = '';
+            delete dataToSubmit.image
         }
-
-
 
         if (formIsValid) {
             if (this.state.formType === 'Edit') {
@@ -202,6 +195,9 @@ class EditPortfolio extends Component {
                     firebaseDB.ref('portfolio_imgs').push(portfolio_img)
                         .then(() => {
                             this.successForm('Image Uploaded');
+                            //this.props.history.push(`/admin_portfolio/edit_portfolio/${this.state.entityID}`);
+                            window.location.reload();
+
                         })
                         .catch((e) => {
                             this.setState({ formError: true })

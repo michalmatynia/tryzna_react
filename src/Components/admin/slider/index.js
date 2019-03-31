@@ -12,8 +12,7 @@ import Paper from '@material-ui/core/Paper';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { firebaseSlider } from '../../../firebase';
 import { firebaseLooper } from '../../ui/misc';
-
-import IndexThmb from './indexThumb';
+import IndexThumb from '../../ui/indexThumb';
 
 class AdminSlider extends Component {
 
@@ -56,9 +55,10 @@ class AdminSlider extends Component {
                                         this.state.slides.map((slide, i) => (
                                             <TableRow key={i}>
                                                 <TableCell className='main_cell'><Link to={`/admin_slider/edit_slider/${slide.id}`}>
-                                                <IndexThmb
+                                                <IndexThumb
                                                 thisId = {slide.id}
                                                 thisImage = {slide.image}
+                                                thisImageFolder = 'slides'
                                                 />
                                                 </Link>
                                                 </TableCell>

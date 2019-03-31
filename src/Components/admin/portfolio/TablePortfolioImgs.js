@@ -12,6 +12,10 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import { firebaseLooper } from '../../ui/misc';
 import { firebaseDB, firebase } from '../../../firebase';
 
+import IndexThumb from '../../ui/indexThumb';
+import DeleteIcon from '@material-ui/icons/Delete';
+import IconButton from '@material-ui/core/IconButton';
+
 class TablePortfolioImgs extends Component {
 
     state = {
@@ -19,80 +23,93 @@ class TablePortfolioImgs extends Component {
         parentID: '',
         isloading: true,
         portfolio_imgs: [],
-       
+
     }
-  
+
 
     componentDidMount() {
         const parentID = this.props.entityID;
         // let portfolio_imgs = [];
 
         firebaseDB.ref('portfolio_imgs').orderByChild("parentID").equalTo(parentID).once("value")
-        .then(
-            (snapshot) => {
-                const portfolio_imgs = firebaseLooper(snapshot);
+            .then(
+                (snapshot) => {
+                    const portfolio_imgs = firebaseLooper(snapshot);
 
-                console.log(portfolio_imgs);
+                    // console.log(portfolio_imgs);
 
-                this.setState({
-                    isloading: false,
-                    portfolio_imgs
-                })   
-            }
-        )
-           
-          
-          // console.log(this.azportfolio_imgs);
-          // console.log(typeof(portfolio_imgs));
-          // console.log(portfolio_imgs);
-         // console.log(this.state.portfolio_imgs);
+                    this.setState({
+                        isloading: false,
+                        portfolio_imgs
+                    })
+                }
+            )
+    }
 
+    removeItemImage(itemToRemoveID, filename) {
 
-/*         this.setState({
-            parentID
-        }) */
-
+    firebase.storage().ref('portfolio').child(filename).delete()
+    firebaseDB.ref(`portfolio_imgs/${itemToRemoveID}`).set(null)
+    .then(
+        window.location.reload()
+    )
+    .catch((e) => {
+        console.log(e)
+    })
+            
     }
 
     render() {
         return (
-                <div>
-                    <Paper>
-                        <Table>
-                            <TableHead>
-                                <TableRow>
-                                    <TableCell>Thumbnail</TableCell>
-                                    <TableCell>Position</TableCell>
-                                </TableRow>
-                            </TableHead>
-                            <TableBody>
-           {
-                                    this.state.portfolio_imgs ?
-                                        this.state.portfolio_imgs.map((img, i) => (
-                                            <TableRow key={i}>
-                                                <TableCell className='main_cell'><Link to={`/admin_portfolio_img/edit_portfolio_img/${img.id}`}>
-                                                {img.filename}
-                                                </Link>
-                                                </TableCell>
-                                                <TableCell>position</TableCell>
+            <div>
+                <Paper>
+                    <Table>
+                        <TableHead>
+                            <TableRow>
+                                <TableCell>Thumbnail</TableCell>
+                                <TableCell>Position</TableCell>
+                                <TableCell>Remove</TableCell>
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
+                            {
+                                this.state.portfolio_imgs ?
+                                    this.state.portfolio_imgs.map((img, i) => (
+                                        <TableRow key={i}>
+                                            <TableCell className='main_cell'><Link to={`/admin_portfolio_img/edit_portfolio_img/${img.id}`}>
+                                                <IndexThumb
+                                                    thisId={img.id}
+                                                    thisImage={img.filename}
+                                                    thisImageFolder='portfolio'
+                                                />
 
-                                            </TableRow>
+                                            </Link>
+                                            </TableCell>
+                                            <TableCell>position</TableCell>
+                                            <TableCell>
+                                                <IconButton
+                                                    onClick={(event) => this.removeItemImage(img.id, img.filename)}
+                                                >
+                                                    <DeleteIcon />
+                                                </IconButton>
+                                            </TableCell>
+                                        </TableRow>
 
-                                        ))
-                                        : null
-                                }
-                            </TableBody>
-                        </Table>
-                    </Paper>
+                                    ))
+                                    : null
+                            }
+                        </TableBody>
+                    </Table>
+                </Paper>
 
-                    <div className="admin_progress">
-                        {
-                            this.state.isloading ?
-                                <CircularProgress thickness={7} style={{ color: '#98c5e9' }} />
-                                : null
-                        }
-                    </div>
+                <div className="admin_progress">
+                    {
+                        this.state.isloading ?
+                            <CircularProgress thickness={7} style={{ color: '#98c5e9' }} />
+                            : null
+                    }
                 </div>
+            </div>
         );
     }
 }
