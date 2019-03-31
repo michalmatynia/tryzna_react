@@ -169,8 +169,7 @@ class EditPortfolio extends Component {
         }
 
 
-        console.log(formIsValid);
-        console.log(dataToSubmit.image);
+       
 
         let portfolio_img = []
 
@@ -183,7 +182,6 @@ class EditPortfolio extends Component {
             dataToSubmit.image = '';
         }
 
-        console.log(portfolio_img);
 
 
         if (formIsValid) {

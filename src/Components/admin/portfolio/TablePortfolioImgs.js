@@ -12,9 +12,6 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import { firebaseLooper } from '../../ui/misc';
 import { firebaseDB, firebase } from '../../../firebase';
 
-// Components
-import InsertPortfolioImgs from './InsertPortfolioImgs';
-
 class TablePortfolioImgs extends Component {
 
     state = {
@@ -24,25 +21,36 @@ class TablePortfolioImgs extends Component {
         portfolio_imgs: [],
        
     }
+  
+
     componentDidMount() {
         const parentID = this.props.entityID;
-        let portfolio_imgs = [];
+        // let portfolio_imgs = [];
 
-        firebaseDB.ref('portfolio_imgs').child("parentID").equalTo(parentID).once("value")
-        .then((snapshot) => {
-            const portfolio_imgs = firebaseLooper(snapshot);
+        firebaseDB.ref('portfolio_imgs').orderByChild("parentID").equalTo(parentID).once("value")
+        .then(
+            (snapshot) => {
+                const portfolio_imgs = firebaseLooper(snapshot);
 
-            this.setState({
-                isloading: false,
-                portfolio_imgs
-            })   
-        })
- 
+                console.log(portfolio_imgs);
+
+                this.setState({
+                    isloading: false,
+                    portfolio_imgs
+                })   
+            }
+        )
+           
           
-          console.log(typeof(portfolio_imgs));
-          console.log(this.state.portfolio_imgs);
+          // console.log(this.azportfolio_imgs);
+          // console.log(typeof(portfolio_imgs));
+          // console.log(portfolio_imgs);
+         // console.log(this.state.portfolio_imgs);
 
 
+/*         this.setState({
+            parentID
+        }) */
 
     }
 
